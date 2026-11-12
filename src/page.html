@@ -166,14 +166,16 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 
 /* ---------- language switch, credit line, Korean text ---------- */
 .panel { position: relative; }
-.lang { position: absolute; top: 12px; right: 16px; z-index: 2; border-width: 3px; border-radius: 12px; box-shadow: 0 3px 0 var(--ink); }
-.lang button { padding: 5px 10px; font-size: 13px; }
+.lang { position: absolute; top: -17px; right: 30px; z-index: 2; border-width: 3px; border-radius: 12px; box-shadow: 0 3px 0 var(--ink); }
+.lang button { padding: 3px 10px; font-size: 13px; }
+#menu { padding-top: 30px; }
 .credit { margin: 0; font-size: 12px; opacity: 0.8; text-align: center; line-height: 1.4; }
 .credit a { color: inherit; font-weight: 800; }
 /* Korean has no Lilita One glyphs: the fallback font is used with real bold, never a smeared fake bold */
 html[lang="ko"] body { word-break: keep-all; line-height: 1.4; }
 html[lang="ko"] h1, html[lang="ko"] h2, html[lang="ko"] .go, html[lang="ko"] .side-name, html[lang="ko"] .item .nm, html[lang="ko"] .how b,
 html[lang="ko"] .meter .num, html[lang="ko"] #banner-title { font-synthesis: none; font-weight: 800; line-height: 1.15; }
+html[lang="ko"] .lab { font-size: 12.5px; }
 html[lang="ko"] .eyebrow, html[lang="ko"] .lab, html[lang="ko"] .team .label, html[lang="ko"] .meter .cap { letter-spacing: 0; }
 html[lang="ko"] .go { letter-spacing: 0; font-size: 26px; }
 html[lang="ko"] .go.alt { font-size: 19px; }
@@ -185,7 +187,7 @@ html[lang="ko"] #slots { gap: 6px; }
 html[lang="ko"] #banner { width: max-content; max-width: min(92vw, 760px); }
 html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, html[lang="ko"] #prompt { max-width: min(92vw, 760px); text-wrap: balance; }
 #banner { max-width: min(92vw, 760px); }
-@media (max-width: 640px) { .lang { position: static; align-self: flex-end; } }
+@media (max-width: 640px) { .lang { top: -15px; right: 16px; } }
 
 @media (max-width: 640px) {
   .sides { grid-template-columns: 1fr; }

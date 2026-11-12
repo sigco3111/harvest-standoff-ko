@@ -1,7 +1,7 @@
 // Everything drawn on top of the 3D view: score, timer, meters, purse, shop, pumpkin prompts, radar and messages.
 import { GADGETS, TEAM, SHOP, OBJ } from './config.js';
 import { angDiff, yawTo } from './util.js';
-import { t } from './i18n.js';
+import { t as tl } from './i18n.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -38,10 +38,10 @@ export function createHud(game) {
     const ar = Math.ceil(p.armor);
     if (last.ar !== ar) { last.ar = ar; el['armor-row'].classList.toggle('on', ar > 0); el['armor-num'].textContent = ar; el['armor-fill'].style.width = ar + '%'; }
     const g = GADGETS[p.gadgetId];
-    set('am', el['ammo-num'], p.reloadT > 0 ? t('hud.refilling') : String(p.ammo));
+    set('am', el['ammo-num'], p.reloadT > 0 ? tl('hud.refilling') : String(p.ammo));
     el['ammo-fill'].style.width = Math.round((p.reloadT > 0 ? 1 - p.reloadT / g.reload : p.ammo / g.tank) * 100) + '%';
-    set('gn', el['gadget-name'], t(`g.${g.id}.name`));
-    set('s1', el['slot-1-name'], p.primary ? t(`g.${p.primary}.short`) : t('hud.empty'));
+    set('gn', el['gadget-name'], tl(`g.${g.id}.name`));
+    set('s1', el['slot-1-name'], p.primary ? tl(`g.${p.primary}.short`) : tl('hud.empty'));
     const key = p.gadgetId + '|' + p.primary;
     if (last.slot !== key) {
       last.slot = key;
@@ -73,22 +73,22 @@ export function createHud(game) {
     const attacking = game.attackers === p.team;
     let status = '', hot = false, prompt = '', frac = -1;
     if (game.state === 'live' || game.state === 'freeze') {
-      if (P.state === 'carried') status = P.carrier === p ? t('status.you') : attacking ? t('status.carrier', { name: P.carrier.name }) : '';
-      else if (P.state === 'dropped') status = t(attacking ? 'status.droppedAtt' : 'status.droppedDef');
-      else if (planted) { status = t(attacking ? 'status.plantedAtt' : 'status.plantedDef', { site: P.site }); hot = true; }
+      if (P.state === 'carried') status = P.carrier === p ? tl('status.you') : attacking ? tl('status.carrier', { name: P.carrier.name }) : '';
+      else if (P.state === 'dropped') status = tl(attacking ? 'status.droppedAtt' : 'status.droppedDef');
+      else if (planted) { status = tl(attacking ? 'status.plantedAtt' : 'status.plantedDef', { site: P.site }); hot = true; }
     }
     if (game.state === 'live' && p.alive) {
       if (P.state === 'carried' && P.carrier === p) {
-        if (P.actor === p) { prompt = t('prompt.planting'); frac = P.progress / OBJ.plantTime; }
-        else prompt = game.siteAt(p.pos.x, p.pos.z) ? t('prompt.plant') : t('prompt.carry');
+        if (P.actor === p) { prompt = tl('prompt.planting'); frac = P.progress / OBJ.plantTime; }
+        else prompt = game.siteAt(p.pos.x, p.pos.z) ? tl('prompt.plant') : tl('prompt.carry');
       } else if (planted && !attacking) {
         const need = p.kit ? OBJ.corkTimeKit : OBJ.corkTime;
-        if (P.actor === p) { prompt = t('prompt.corking'); frac = P.progress / need; }
-        else if (Math.hypot(p.pos.x - P.x, p.pos.z - P.z) < OBJ.reach) prompt = t('prompt.cork');
+        if (P.actor === p) { prompt = tl('prompt.corking'); frac = P.progress / need; }
+        else if (Math.hypot(p.pos.x - P.x, p.pos.z - P.z) < OBJ.reach) prompt = tl('prompt.cork');
       }
     }
     const hunt = game.mode === 'lts';
-    if (hunt && game.state === 'live' && game.revealed) status = t('status.reveal');
+    if (hunt && game.state === 'live' && game.revealed) status = tl('status.reveal');
     show('st', el.status, !!status);
     if (status) { set('stt', el['status-text'], status); el.status.classList.toggle('hot', hot); el.status.classList.toggle('plain', hunt); }
     show('pr', el.prompt, !!prompt);
@@ -115,7 +115,7 @@ export function createHud(game) {
     const key = p.coins + '|' + items.map((i) => i.state).join('');
     if (key === shopKey) return;
     shopKey = key;
-    el['shop-coins'].textContent = t('shop.coins', { n: p.coins.toLocaleString('en-US') });
+    el['shop-coins'].textContent = tl('shop.coins', { n: p.coins.toLocaleString('en-US') });
     el['shop-list'].textContent = '';
     items.forEach((it, i) => {
       const b = document.createElement('button');
@@ -127,7 +127,7 @@ export function createHud(game) {
       const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = it.name;
       const bl = document.createElement('span'); bl.className = 'bl'; bl.textContent = it.blurb;
       mid.append(nm, document.createElement('br'), bl);
-      const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = it.state === 'own' ? t('shop.owned') : it.price.toLocaleString('en-US');
+      const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = it.state === 'own' ? tl('shop.owned') : it.price.toLocaleString('en-US');
       b.append(k, img, mid, pr);
       b.addEventListener('click', () => game.buy(p, it.id));
       el['shop-list'].append(b);
@@ -178,7 +178,7 @@ export function createHud(game) {
     feed(attacker, victim, head) {
       const row = document.createElement('div');
       const who = (a) => { const b = document.createElement('b'); b.className = a.team; b.textContent = a.name; return b; };
-      row.append(who(attacker), t(head ? 'feed.bonk' : 'feed.splat'), who(victim), t(head ? 'feed.endHead' : 'feed.end'));
+      row.append(who(attacker), tl(head ? 'feed.bonk' : 'feed.splat'), who(victim), tl(head ? 'feed.endHead' : 'feed.end'));
       el.feed.append(row);
       while (el.feed.children.length > 5) el.feed.firstChild.remove();
       setTimeout(() => row.remove(), 6000);

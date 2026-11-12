@@ -13,7 +13,7 @@ import { createHud } from './hud.js';
 import { createViewModel } from './viewmodel.js';
 import { buildPumpkin, buildCharacter, buildGadget, animateCharacter, modelOptions } from './characters.js';
 import { raycast, rayBox, raySphere } from './collide.js';
-import { t, applyI18n, setLang, onLangChange } from './i18n.js';
+import { t as tl, applyI18n, setLang, onLangChange } from './i18n.js';
 import { clamp, dirX, dirY, dirZ, yawTo, shuffle, pick, rand } from './util.js';
 
 const T = window.THREE;
@@ -123,8 +123,8 @@ function boot() {
     if (it.kind === 'gadget' ? a.primary === it.id : it.kind === 'throw' ? a.throws[it.id] > 0 : it.id === 'overalls' ? a.armor >= 100 : a.kit) state = 'own';
     else if (it.role && (lts() || it.role !== roleOf(a.team))) state = 'role';
     else if (a.coins < it.price) state = 'poor';
-    const blurb = state !== 'role' ? t(`shop.${it.id}.blurb`) : lts() ? t('shop.roleLts') : t('shop.roleDef');
-    return { id: it.id, name: g ? t(`g.${g.id}.name`) : t(`shop.${it.id}.name`), icon: it.icon, price: it.price, blurb, state };
+    const blurb = state !== 'role' ? tl(`shop.${it.id}.blurb`) : lts() ? tl('shop.roleLts') : tl('shop.roleDef');
+    return { id: it.id, name: g ? tl(`g.${g.id}.name`) : tl(`shop.${it.id}.name`), icon: it.icon, price: it.price, blurb, state };
   });
   game.buy = (a, id) => {
     const it = game.shopItems(a).find((i) => i.id === id);
@@ -161,7 +161,7 @@ function boot() {
     for (const t of ['herd', 'hands']) {
       ROSTER[t].forEach((info, i) => {
         const isPlayer = t === team && i === 0;
-        const a = new Actor(game, t, isPlayer ? { ...info, name: t('hud.you') } : { ...info, name: t('name.' + info.name) }, isPlayer);
+        const a = new Actor(game, t, isPlayer ? { ...info, name: tl('hud.you') } : { ...info, name: tl('name.' + info.name) }, isPlayer);
         a.survived = false;
         game.actors.push(a);
         if (isPlayer) game.player = a;
@@ -176,7 +176,7 @@ function boot() {
   }
 
   let mainSite = 'A', callT = -1;
-  const PLACE = (k) => t('place.' + k);
+  const PLACE = (k) => tl('place.' + k);
   // Last Team Standing: each team picks a part of the map to gather at, then goes hunting
   function planHunt() {
     const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
@@ -253,11 +253,11 @@ function boot() {
     spectateIdx = 0; game.viewActor = game.player; game.shopOpen = true; hud.refreshShop();
     hud.spectate(null);
     const attacking = roleOf(game.playerTeam) === 'attack';
-    const job = lts() ? t('job.lts')
-      : attacking ? (P.carrier === game.player ? t('job.carrying') : t('job.helpPlant')) : t('job.defend');
+    const job = lts() ? tl('job.lts')
+      : attacking ? (P.carrier === game.player ? tl('job.carrying') : tl('job.helpPlant')) : tl('job.defend');
     const point = Math.max(game.score.herd, game.score.hands) === ROUND.winTarget - 1;
-    if (half) { hud.banner(t('round.half'), t(lts() ? 'round.halfEnds' : 'round.halfJobs', { job }), 5); audio.announce('ann_half'); }
-    else hud.banner(game.round === 1 ? t(`map.${game.mapId}.name`) : t('round.n', { n: game.round }), job, 3.2);
+    if (half) { hud.banner(tl('round.half'), tl(lts() ? 'round.halfEnds' : 'round.halfJobs', { job }), 5); audio.announce('ann_half'); }
+    else hud.banner(game.round === 1 ? tl(`map.${game.mapId}.name`) : tl('round.n', { n: game.round }), job, 3.2);
     if (game.round === 1 && lts()) audio.announce('ann_lts');
     if (point) audio.announce('ann_match_point');
     callT = -1;
@@ -276,7 +276,7 @@ function boot() {
     game.state = 'roundEnd'; game.endT = ROUND.endDelay;
     P.actor = null;
     const won = winner === game.playerTeam;
-    hud.banner(!winner ? t('round.drawn') : won ? t('round.won') : t('round.lost'), why, ROUND.endDelay);
+    hud.banner(!winner ? tl('round.drawn') : won ? tl('round.won') : tl('round.lost'), why, ROUND.endDelay);
     audio.stopMusic(0.3);
     if (!winner) { audio.bell(); audio.announce('ann_draw'); return; }
     if (won) audio.win(); else audio.lose();
@@ -287,8 +287,8 @@ function boot() {
     game.state = 'matchEnd';
     const winner = game.score.herd > game.score.hands ? 'herd' : 'hands';
     const won = winner === game.playerTeam;
-    $('end-title').textContent = won ? t('end.won') : t('end.teamWon', { team: t(`team.${winner}.name`) });
-    $('end-sub').textContent = t('end.sub', { herd: game.score.herd, hands: game.score.hands, msg: t(won ? 'end.msgWon' : 'end.msgLost') });
+    $('end-title').textContent = won ? tl('end.won') : tl('end.teamWon', { team: tl(`team.${winner}.name`) });
+    $('end-sub').textContent = tl('end.sub', { herd: game.score.herd, hands: game.score.hands, msg: tl(won ? 'end.msgWon' : 'end.msgLost') });
     $('end').hidden = false;
     hud.hideBanner();
     audio.music(won ? 'music_victory' : 'music_defeat', false, 1);
@@ -329,7 +329,7 @@ function boot() {
     P.state = 'carried'; P.carrier = a;
     audio.radio(a.team, 'got_it');
     const b = botOf.get(a);
-    if (b) b.carryTo(nearestSite(a)); else hud.tip(t('tip.pickup'), 4);
+    if (b) b.carryTo(nearestSite(a)); else hud.tip(tl('tip.pickup'), 4);
     for (const o of game.bots) o.fetching = o === b ? false : o.fetching && false;
   }
   const nearestSite = (a) => (dist(a, W.sites.A.x, W.sites.A.z) < dist(a, W.sites.B.x, W.sites.B.z) ? 'A' : 'B');
@@ -340,7 +340,7 @@ function boot() {
     tickT = 0; tickN = 0; dutyT = 0;
     audio.thud(P.x, P.z); audio.announce('ann_planted'); audio.music('music_fuse', true, 0.55);
     const att = game.attackers, def = other(att), mine = att === game.playerTeam;
-    hud.banner(t('banner.planted', { site }), mine ? t('banner.guard', { n: OBJ.fuse }) : t('banner.cork'), 3.5);
+    hud.banner(tl('banner.planted', { site }), mine ? tl('banner.guard', { n: OBJ.fuse }) : tl('banner.cork'), 3.5);
     audio.radio(att, 'guard');
     if (def === 'hands') audio.radio(def, site === 'A' ? 'planted_a' : 'planted_b');
     // attackers dig in around it; defenders come to take it back
@@ -359,7 +359,7 @@ function boot() {
         stopUse();
         const spot = game.nav.nearestFree(c.pos.x, c.pos.z);
         Object.assign(P, { state: 'dropped', carrier: null, x: spot.x, z: spot.z });
-        hud.note(t('note.dropped'));
+        hud.note(tl('note.dropped'));
         audio.thud(P.x, P.z);
         dutyT = 0;
       } else {
@@ -400,7 +400,7 @@ function boot() {
           stopUse(); hero.earn(ECON.cork);
           P.state = 'corked';
           audio.corkPop(P.x, P.z); audio.announce('ann_corked');
-          endRound(def, hero.isPlayer ? t('why.corkedYou') : t('why.corked', { name: hero.name }));
+          endRound(def, hero.isPlayer ? tl('why.corkedYou') : tl('why.corked', { name: hero.name }));
           return;
         }
       }
@@ -408,7 +408,7 @@ function boot() {
         stopUse();
         P.state = 'burst';
         stinkCloud(P.x, P.z); audio.stink(P.x, P.z); audio.announce('ann_stink');
-        endRound(att, t('why.burst'));
+        endRound(att, tl('why.burst'));
         return;
       }
       dutyT -= dt;
@@ -464,7 +464,7 @@ function boot() {
     if (locked) return;
     if (everLocked) { if (playing()) pause(); return; }
     noLock = true;
-    hud.tip(t('tip.look'), 7);
+    hud.tip(tl('tip.look'), 7);
   }
   function lock() {
     if (noLock || locked) return;
@@ -526,7 +526,7 @@ function boot() {
     if (e.code === 'KeyV') {
       shoulder = !shoulder; audio.ui();
       try { localStorage.setItem('hs-view', shoulder ? 'shoulder' : 'eyes'); } catch (err) { /* not saved */ }
-      hud.tip(t(shoulder ? 'tip.shoulder' : 'tip.eyes'), 3.5);
+      hud.tip(tl(shoulder ? 'tip.shoulder' : 'tip.eyes'), 3.5);
     }
   });
   window.addEventListener('keyup', (e) => { keys[e.code] = false; });
@@ -613,7 +613,7 @@ function boot() {
       const mates = alive(p.team);
       const others = mates.length ? mates : game.actors.filter((a) => a.alive);
       if (others.length) target = others[spectateIdx % others.length];
-      hud.spectate(target === p ? t('spec.out') : t('spec.watch', { name: target.name }));
+      hud.spectate(target === p ? tl('spec.out') : tl('spec.watch', { name: target.name }));
     }
     game.viewActor = target; game.viewYaw = target.yaw;
     const fx = dirX(target.yaw), fz = dirZ(target.yaw);
@@ -639,7 +639,7 @@ function boot() {
         if (game.freezeT <= 0) {
           game.state = 'live'; game.shopOpen = false;
           audio.bell(); audio.radio(game.playerTeam, ['go_1', 'go_2']);
-          hud.banner(t('round.go'), '', 0.9);
+          hud.banner(tl('round.go'), '', 0.9);
           callT = game.time + 2.2;
         }
       } else if (game.state === 'live') {
@@ -649,11 +649,11 @@ function boot() {
         // a teammate calls out where the team is heading
         if (callT > 0 && game.time > callT) {
           callT = -1;
-          if (lts() || roleOf(game.playerTeam) === 'attack') { if (mainSite !== 'MID') audio.radio(game.playerTeam, mainSite === 'A' ? 'to_a' : 'to_b'); hud.note(t('note.heading', { place: PLACE(mainSite) })); }
+          if (lts() || roleOf(game.playerTeam) === 'attack') { if (mainSite !== 'MID') audio.radio(game.playerTeam, mainSite === 'A' ? 'to_a' : 'to_b'); hud.note(tl('note.heading', { place: PLACE(mainSite) })); }
         }
         // Last Team Standing: near the end nobody can hide, so the round always finishes with a chase
         if (lts() && game.roundT <= ROUND.reveal) {
-          if (!game.revealed) { game.revealed = true; audio.announce('ann_reveal'); hud.banner(t('reveal.t'), t('reveal.d'), 3); }
+          if (!game.revealed) { game.revealed = true; audio.announce('ann_reveal'); hud.banner(tl('reveal.t'), tl('reveal.d'), 3); }
           revealT -= dt;
           if (revealT <= 0) { revealT = 0.5; for (const a of game.actors) if (a.alive) game.report(other(a.team), a); }
         }
@@ -665,25 +665,25 @@ function boot() {
       game.throwables.update(dt);
       if (game.state === 'live' && !lts()) updatePumpkin(dt);
       if (game.state === 'live' && lts()) {
-        const herd = alive('herd'), hands = alive('hands'), names = { herd: t('team.herd.name'), hands: t('team.hands.name') };
+        const herd = alive('herd'), hands = alive('hands'), names = { herd: tl('team.herd.name'), hands: tl('team.hands.name') };
         const clean = (list) => list.reduce((n, a) => n + a.hp, 0);
-        if (!herd.length && !hands.length) endRound(null, t('why.bothOut'));
-        else if (!hands.length) endRound('herd', t('why.allHands', { team: names.herd }));
-        else if (!herd.length) endRound('hands', t('why.allHerd', { team: names.hands }));
+        if (!herd.length && !hands.length) endRound(null, tl('why.bothOut'));
+        else if (!hands.length) endRound('herd', tl('why.allHands', { team: names.herd }));
+        else if (!herd.length) endRound('hands', tl('why.allHerd', { team: names.hands }));
         else if (game.roundT <= 0) {
           audio.announce('ann_time');
           // time is up: more players left wins, then whoever is cleaner
           const w = herd.length !== hands.length ? (herd.length > hands.length ? 'herd' : 'hands') : Math.abs(clean(herd) - clean(hands)) < 1 ? null : clean(herd) > clean(hands) ? 'herd' : 'hands';
-          if (!w) endRound(null, t('why.timeDraw'));
-          else endRound(w, t(herd.length !== hands.length ? 'why.timeMore' : 'why.timeClean', { team: names[w] }));
+          if (!w) endRound(null, tl('why.timeDraw'));
+          else endRound(w, tl(herd.length !== hands.length ? 'why.timeMore' : 'why.timeClean', { team: names[w] }));
         }
       } else if (game.state === 'live') {
         const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
-        const names = { herd: t('team.herd.name'), hands: t('team.hands.name') };
-        if (nDef === 0 && nAtt > 0) endRound(att, P.state === 'planted' ? t('why.noCorker') : t('why.defOut', { team: names[att] }));
+        const names = { herd: tl('team.herd.name'), hands: tl('team.hands.name') };
+        if (nDef === 0 && nAtt > 0) endRound(att, P.state === 'planted' ? tl('why.noCorker') : tl('why.defOut', { team: names[att] }));
         else if (P.state !== 'planted') {
-          if (nAtt === 0) endRound(def, t('why.attOut', { team: names[def] }));
-          else if (game.roundT <= 0) { audio.announce('ann_time'); endRound(def, t('why.noPlant')); }
+          if (nAtt === 0) endRound(def, tl('why.attOut', { team: names[def] }));
+          else if (game.roundT <= 0) { audio.announce('ann_time'); endRound(def, tl('why.noPlant')); }
         }
       } else if (game.state === 'roundEnd') {
         game.endT -= dt;
@@ -724,8 +724,8 @@ function boot() {
   function showMode() {
     const m = MODES[game.mode];
     document.querySelectorAll('#modes button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.mode === game.mode)));
-    $('job-herd').textContent = t(`job.${game.mode}.herd`); $('job-hands').textContent = t(`job.${game.mode}.hands`);
-    for (let i = 0; i < 3; i++) { const li = $('how-' + i); li.textContent = ''; const b = document.createElement('b'); b.textContent = t(`how.${game.mode}.${i}.t`); li.append(b, t(`how.${game.mode}.${i}.d`)); }
+    $('job-herd').textContent = tl(`job.${game.mode}.herd`); $('job-hands').textContent = tl(`job.${game.mode}.hands`);
+    for (let i = 0; i < 3; i++) { const li = $('how-' + i); li.textContent = ''; const b = document.createElement('b'); b.textContent = tl(`how.${game.mode}.${i}.t`); li.append(b, tl(`how.${game.mode}.${i}.d`)); }
     $('key-use').hidden = game.mode === 'lts';
   }
   function setMode(id) {
@@ -741,13 +741,13 @@ function boot() {
   document.querySelectorAll('#levels button').forEach((b) => b.addEventListener('click', () => { pickDiff = b.dataset.diff; choose('#levels button', 'diff', pickDiff); audio.ui(); }));
   document.querySelectorAll('#maps button').forEach((b) => {
     b.setAttribute('aria-checked', String(b.dataset.map === game.mapId));
-    b.addEventListener('click', () => { loadMap(b.dataset.map); choose('#maps button', 'map', game.mapId); $('map-blurb').textContent = t(`map.${game.mapId}.blurb`); audio.ui(); });
+    b.addEventListener('click', () => { loadMap(b.dataset.map); choose('#maps button', 'map', game.mapId); $('map-blurb').textContent = tl(`map.${game.mapId}.blurb`); audio.ui(); });
   });
-  $('map-blurb').textContent = t(`map.${game.mapId}.blurb`);
+  $('map-blurb').textContent = tl(`map.${game.mapId}.blurb`);
   // language switch: the choice is saved by setLang()
   applyI18n();
   document.querySelectorAll('#langs button').forEach((b) => b.addEventListener('click', () => { setLang(b.dataset.lang); audio.ui(); }));
-  onLangChange(() => { showMode(); $('map-blurb').textContent = t(`map.${game.mapId}.blurb`); hud.refreshShop(); });
+  onLangChange(() => { showMode(); $('map-blurb').textContent = tl(`map.${game.mapId}.blurb`); hud.refreshShop(); });
   // sound can only start after the first click anywhere
   document.addEventListener('pointerdown', () => {
     audio.init();
