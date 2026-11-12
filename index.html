@@ -218,20 +218,44 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
   #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
   #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
 }
+
+/* ---------- logo subtitle, subtitle switch, pause-screen switches, subtitle bar ---------- */
+.logo-wrap { position: relative; container-type: inline-size; min-width: 0; }
+.logo-sub {
+  position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+  font-family: var(--display); font-weight: 900; font-synthesis: none; font-size: 20px; font-size: clamp(14px, 8.5cqw, 34px); line-height: 1.1; letter-spacing: 0.02em;
+  color: var(--cream); -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink);
+}
+html[lang="en"] .logo-sub { display: none; }
+.lang.left { right: auto; left: 30px; }
+.lang.inline { position: static; margin: 0; }
+@media (max-width: 640px) { .lang.left { left: 16px; } }
+#subs {
+  position: absolute; left: 50%; bottom: 164px; transform: translateX(-50%); z-index: 30; width: max-content; max-width: min(92vw, 760px);
+  display: grid; gap: 6px; pointer-events: none; text-align: center;
+}
+#subs .sub {
+  background: rgba(24, 16, 10, 0.82); color: #fff; border-radius: 14px; padding: 7px 16px; font-size: 20px; line-height: 1.35; font-weight: 800;
+  word-break: keep-all; text-wrap: balance; text-shadow: 0 1px 2px #000;
+}
+#subs .sub b { margin-right: 4px; font-weight: 800; }
+#subs .sub.ann b { color: var(--hay); } #subs .sub.herd b { color: #ffb15c; } #subs .sub.hands b { color: #8cc6ff; }
+html[lang="en"] #subs .sub { font-size: 19px; word-break: normal; }
+@media (max-width: 640px) { #subs .sub { font-size: 16px; padding: 5px 12px; } #subs { bottom: 146px; } }
 </style>
 </head>
 <body>
 
 
 <div id="game">
-  <canvas id="view" aria-label="Harvest Standoff" data-i18n-aria="title"></canvas>
+  <canvas id="view" aria-label="하베스트 스탠드오프" data-i18n-aria="title"></canvas>
 
   <div id="hud" hidden>
     <canvas id="radar" width="272" height="272"></canvas>
     <div id="top" class="pill">
-      <div class="team herd"><span class="score" id="score-herd">0</span><span class="label" data-i18n="team.herd.short">Herd</span><span class="pips" id="pips-herd"></span></div>
+      <div class="team herd"><span class="score" id="score-herd">0</span><span class="label" data-i18n="team.herd.short">동물</span><span class="pips" id="pips-herd"></span></div>
       <div id="timer">1:40</div>
-      <div class="team hands"><span class="score" id="score-hands">0</span><span class="label" data-i18n="team.hands.short">Hands</span><span class="pips" id="pips-hands"></span></div>
+      <div class="team hands"><span class="score" id="score-hands">0</span><span class="label" data-i18n="team.hands.short">농부</span><span class="pips" id="pips-hands"></span></div>
     </div>
     <div id="feed"></div>
     <div id="hurt"></div>
@@ -244,108 +268,128 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
     <div id="tip" class="pill" hidden></div>
     <div id="spectate" class="pill" hidden></div>
-    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span data-i18n="hud.overalls">Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span data-i18n="hud.clean">Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
-    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd><span data-i18n="g.squirter.short">Squirter</span></div><div id="slot-3" class="empty"><kbd>3</kbd><span data-i18n="throw.flour">Flour</span></div><div id="slot-4" class="empty"><kbd>4</kbd><span data-i18n="throw.rooster">Rooster</span></div><div id="slot-5" class="empty"><kbd>5</kbd><span data-i18n="throw.mud">Mud</span></div><div id="slot-b"><kbd>B</kbd><span data-i18n="hud.shop">Shop</span></div></div>
-    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins" data-i18n-alt="coins.alt"><span id="coins">800</span></div>
+    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span data-i18n="hud.overalls">멜빵바지</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span data-i18n="hud.clean">깨끗함</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">비어 있음</span></div><div id="slot-2"><kbd>2</kbd><span data-i18n="g.squirter.short">물총</span></div><div id="slot-3" class="empty"><kbd>3</kbd><span data-i18n="throw.flour">밀가루</span></div><div id="slot-4" class="empty"><kbd>4</kbd><span data-i18n="throw.rooster">수탉</span></div><div id="slot-5" class="empty"><kbd>5</kbd><span data-i18n="throw.mud">진흙</span></div><div id="slot-b"><kbd>B</kbd><span data-i18n="hud.shop">상점</span></div></div>
+    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="옥수수 코인" data-i18n-alt="coins.alt"><span id="coins">800</span></div>
     <div id="shop" class="pill" hidden>
-      <h2><span data-i18n="shop.title">Farm Shop</span> <span id="shop-coins"></span></h2>
+      <h2><span data-i18n="shop.title">농장 상점</span> <span id="shop-coins"></span></h2>
       <div id="shop-list"></div>
-      <div class="foot"><span data-i18n="shop.foot1">Press a number to buy.</span> <kbd>B</kbd> <span data-i18n="shop.foot2">closes the shop. Splatted players lose what they bought.</span></div>
+      <div class="foot"><span data-i18n="shop.foot1">숫자 키를 눌러 구매하세요.</span> <kbd>B</kbd> <span data-i18n="shop.foot2">키로 상점을 닫아요. 맞아서 아웃되면 산 물건을 잃어요.</span></div>
     </div>
-    <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">Water Squirter</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
+    <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">물총</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
   </div>
 
   <div id="menu" class="overlay">
     <div class="panel">
-      <div class="seg lang" id="langs" role="radiogroup" aria-label="Language" data-i18n-aria="lang.aria">
+      <div class="seg lang lang-sw" id="langs" role="radiogroup" aria-label="언어 선택" data-i18n-aria="lang.aria">
         <button data-lang="ko" role="radio" aria-checked="true" lang="ko">한국어</button>
         <button data-lang="en" role="radio" aria-checked="false" lang="en">English</button>
       </div>
+      <div class="seg lang subs-sw left" role="radiogroup" aria-label="자막 설정" data-i18n-aria="subs.aria">
+        <button data-subs="1" role="radio" aria-checked="true" data-i18n="subs.on">자막 켬</button>
+        <button data-subs="0" role="radio" aria-checked="false" data-i18n="subs.off">자막 끔</button>
+      </div>
       <header class="head">
-        <h1 class="sr" data-i18n="title">Harvest Standoff</h1>
-        <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" data-i18n-alt="alt.logo" width="1000" height="563">
-        <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" data-i18n-alt="alt.keyart" width="1536" height="864">
+        <h1 class="sr" data-i18n="title">하베스트 스탠드오프</h1>
+        <div class="logo-wrap">
+          <img class="logo" src="assets/ui/logo.jpg" alt="하베스트 스탠드오프 (Harvest Standoff)" data-i18n-alt="alt.logo" width="1000" height="563">
+          <span class="logo-sub" lang="ko" aria-hidden="true" data-i18n="logo.sub">하베스트 스탠드오프</span>
+        </div>
+        <img class="art" src="assets/ui/keyart.jpg" alt="빨간 헛간 앞에서 물총 싸움을 벌이는 농장 동물들과 농부들" data-i18n-alt="alt.keyart" width="1536" height="864">
       </header>
       <div class="pick mode">
-        <span class="lab" data-i18n="game.label">Game</span>
-        <div class="seg" id="modes" role="radiogroup" aria-label="Choose the game" data-i18n-aria="aria.modes">
-          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true" data-i18n="mode.pumpkin">Stink-Pumpkin</button>
-          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false" data-i18n="mode.lts">Last Team Standing</button>
+        <span class="lab" data-i18n="game.label">게임</span>
+        <div class="seg" id="modes" role="radiogroup" aria-label="게임 방식 고르기" data-i18n-aria="aria.modes">
+          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true" data-i18n="mode.pumpkin">악취 호박</button>
+          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false" data-i18n="mode.lts">최후의 한 팀</button>
         </div>
-        <p class="tag" data-i18n="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
+        <p class="tag" data-i18n="tag">동물 팀 대 농부 팀, 5대5 대결! 다치는 사람은 없고, 엉망진창만 있을 뿐이에요.</p>
       </div>
-      <div class="sides" role="radiogroup" aria-label="Choose your side" data-i18n-aria="aria.sides">
+      <div class="sides" role="radiogroup" aria-label="내 팀 고르기" data-i18n-aria="aria.sides">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
           <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
-          <span class="side-name" data-i18n="team.herd.name">The Herd</span>
-          <span class="side-job" id="job-herd">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
+          <span class="side-name" data-i18n="team.herd.name">동물 팀</span>
+          <span class="side-job" id="job-herd">농장 동물 친구들이에요. 악취 호박을 몰래 A 구역이나 B 구역에 가져다 놓는 게 첫 임무예요.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
           <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
-          <span class="side-name" data-i18n="team.hands.name">The Hands</span>
-          <span class="side-job" id="job-hands">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
+          <span class="side-name" data-i18n="team.hands.name">농부 팀</span>
+          <span class="side-job" id="job-hands">농부들이에요. 두 구역을 지키다가, 호박이 심어지면 코르크로 막아요.</span>
         </button>
       </div>
       <ul class="how">
-        <li id="how-0"><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
-        <li id="how-1"><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
-        <li id="how-2"><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+        <li id="how-0"><b>호박 심기</b>악취 호박을 A나 B 구역까지 들고 가서 E 키를 길게 누르세요. 호박이 터지면 우리 팀이 라운드를 이겨요.</li>
+        <li id="how-1"><b>코르크로 막기</b>수비 팀은 호박을 코르크로 막거나, 제한 시간 안에 심지 못하게 하면 이겨요.</li>
+        <li id="how-2"><b>똑똑한 쇼핑</b>라운드에서 이기고 상대를 맞히면 옥수수 코인을 벌어요. 5라운드 뒤에 팀의 역할이 바뀌고, 먼저 6승을 하면 승리!</li>
       </ul>
       <div class="row">
         <div class="pick">
-          <span class="lab" data-i18n="map.label">Map</span>
-          <div class="seg" id="maps" role="radiogroup" aria-label="Choose the map" data-i18n-aria="aria.maps">
-            <button id="map-farm" data-map="farm" role="radio" aria-checked="true" data-i18n="map.farm.name">Sunnyside Farm</button>
-            <button id="map-mill" data-map="mill" role="radio" aria-checked="false" data-i18n="map.mill.name">Applewood Mill</button>
+          <span class="lab" data-i18n="map.label">맵</span>
+          <div class="seg" id="maps" role="radiogroup" aria-label="맵 고르기" data-i18n-aria="aria.maps">
+            <button id="map-farm" data-map="farm" role="radio" aria-checked="true" data-i18n="map.farm.name">써니사이드 농장</button>
+            <button id="map-mill" data-map="mill" role="radio" aria-checked="false" data-i18n="map.mill.name">애플우드 방앗간</button>
           </div>
         </div>
         <div class="pick">
-          <span class="lab" data-i18n="level.label">Level</span>
-          <div class="seg" id="levels" role="radiogroup" aria-label="How tough are the computer players" data-i18n-aria="aria.levels">
-            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true" data-i18n="diff.easy">Easy</button>
-            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false" data-i18n="diff.medium">Medium</button>
-            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false" data-i18n="diff.hard">Hard</button>
+          <span class="lab" data-i18n="level.label">난이도</span>
+          <div class="seg" id="levels" role="radiogroup" aria-label="컴퓨터 플레이어의 실력 고르기" data-i18n-aria="aria.levels">
+            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true" data-i18n="diff.easy">쉬움</button>
+            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false" data-i18n="diff.medium">보통</button>
+            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false" data-i18n="diff.hard">어려움</button>
           </div>
         </div>
-        <button id="play" class="go" data-i18n="play">Play</button>
+        <button id="play" class="go" data-i18n="play">게임 시작</button>
       </div>
       <p class="blurb" id="map-blurb"></p>
       <ul class="keys">
-        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span data-i18n="key.move">move</span></li>
-        <li><kbd data-i18n="key.mouse">Mouse</kbd> <span data-i18n="key.look">look, click to launch</span></li>
-        <li id="key-use"><kbd>E</kbd> <span data-i18n="key.use">plant or cork</span></li>
-        <li><kbd>B</kbd> <span data-i18n="key.shop">shop</span></li>
-        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> <span data-i18n="key.swap">swap launcher</span></li>
-        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> <span data-i18n="key.throw">throw</span></li>
-        <li><kbd>R</kbd> <span data-i18n="key.refill">refill</span></li>
-        <li><kbd data-i18n="key.space">Space</kbd> <span data-i18n="key.jump">jump</span></li>
-        <li><kbd>Shift</kbd> <span data-i18n="key.tiptoe">tiptoe</span></li>
-        <li><kbd>C</kbd> <span data-i18n="key.crouch">crouch</span></li>
-        <li><kbd data-i18n="key.rclick">Right-click</kbd> <span data-i18n="key.zoom">zoom</span></li>
-        <li><kbd>V</kbd> <span data-i18n="key.view">change view</span></li>
+        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span data-i18n="key.move">이동</span></li>
+        <li><kbd data-i18n="key.mouse">마우스</kbd> <span data-i18n="key.look">시점 이동, 클릭하면 발사</span></li>
+        <li id="key-use"><kbd>E</kbd> <span data-i18n="key.use">심기 / 막기</span></li>
+        <li><kbd>B</kbd> <span data-i18n="key.shop">상점</span></li>
+        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> <span data-i18n="key.swap">무기 바꾸기</span></li>
+        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> <span data-i18n="key.throw">던지기</span></li>
+        <li><kbd>R</kbd> <span data-i18n="key.refill">다시 채우기</span></li>
+        <li><kbd data-i18n="key.space">스페이스</kbd> <span data-i18n="key.jump">점프</span></li>
+        <li><kbd>Shift</kbd> <span data-i18n="key.tiptoe">살금살금 걷기</span></li>
+        <li><kbd>C</kbd> <span data-i18n="key.crouch">웅크리기</span></li>
+        <li><kbd data-i18n="key.rclick">우클릭</kbd> <span data-i18n="key.zoom">확대</span></li>
+        <li><kbd>V</kbd> <span data-i18n="key.view">시점 바꾸기</span></li>
       </ul>
-      <p class="note" id="touch-note" hidden data-i18n="touch">This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
-      <p class="credit"><span data-i18n="credit">Unofficial Korean localization. Original game by andreteow. Source:</span> <a href="https://github.com/andreteow/farm-ca" target="_blank" rel="noopener">andreteow/farm-ca</a></p>
+      <p class="note" id="touch-note" hidden data-i18n="touch">이 테스트 버전은 키보드와 마우스가 필요해서 아직 휴대폰이나 태블릿에서는 할 수 없어요.</p>
+      <p class="credit"><span data-i18n="credit">비공식 한글화 · 원작 제작: andreteow · 원작 저장소:</span> <a href="https://github.com/andreteow/farm-ca" target="_blank" rel="noopener">andreteow/farm-ca</a></p>
     </div>
   </div>
 
   <div id="pause" class="overlay" hidden>
     <div class="panel small">
-      <h2 data-i18n="pause.title">Paused</h2>
-      <p data-i18n="pause.text">The farm is frozen. Nothing moves until you come back.</p>
-      <label class="slider" for="sens"><span data-i18n="pause.sens">Mouse speed</span> <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
-      <label class="slider" for="vol"><span data-i18n="pause.vol">Sound volume</span> <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
-      <div class="btns"><button id="resume" class="go" data-i18n="pause.resume">Keep playing</button><button id="quit" class="go alt" data-i18n="pause.quit">Leave match</button></div>
+      <h2 data-i18n="pause.title">일시정지</h2>
+      <p data-i18n="pause.text">농장이 멈췄어요. 돌아올 때까지 아무것도 움직이지 않아요.</p>
+      <label class="slider" for="sens"><span data-i18n="pause.sens">마우스 속도</span> <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+      <label class="slider" for="vol"><span data-i18n="pause.vol">소리 크기</span> <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
+      <div class="slider"><span data-i18n="pause.lang">언어</span>
+        <div class="seg lang lang-sw inline" role="radiogroup" aria-label="언어 선택" data-i18n-aria="lang.aria">
+          <button data-lang="ko" role="radio" aria-checked="true" lang="ko">한국어</button>
+          <button data-lang="en" role="radio" aria-checked="false" lang="en">English</button>
+        </div>
+      </div>
+      <div class="slider"><span data-i18n="pause.subs">자막</span>
+        <div class="seg lang subs-sw inline" role="radiogroup" aria-label="자막 설정" data-i18n-aria="subs.aria">
+          <button data-subs="1" role="radio" aria-checked="true" data-i18n="subs.on">자막 켬</button>
+          <button data-subs="0" role="radio" aria-checked="false" data-i18n="subs.off">자막 끔</button>
+        </div>
+      </div>
+      <div class="btns"><button id="resume" class="go" data-i18n="pause.resume">계속하기</button><button id="quit" class="go alt" data-i18n="pause.quit">경기 나가기</button></div>
     </div>
   </div>
 
   <div id="end" class="overlay" hidden>
     <div class="panel small">
-      <h2 id="end-title" data-i18n="end.title">Match over</h2>
+      <h2 id="end-title" data-i18n="end.title">경기 종료</h2>
       <p id="end-sub"></p>
-      <div class="btns"><button id="again" class="go" data-i18n="end.again">Play again</button><button id="to-menu" class="go alt" data-i18n="end.menu">Switch sides</button></div>
+      <div class="btns"><button id="again" class="go" data-i18n="end.again">다시 하기</button><button id="to-menu" class="go alt" data-i18n="end.menu">팀 바꾸기</button></div>
     </div>
   </div>
+  <div id="subs" aria-live="polite" hidden></div>
 </div>
 
 <script src="vendor/three.min.js"></script>
@@ -633,32 +677,7 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     reveal: 30
     // Last Team Standing: with this many seconds left, everyone still standing shows on the map
   };
-  var MODES = {
-    pumpkin: {
-      name: "Stink-Pumpkin",
-      jobs: {
-        herd: "The animals. They start by sneaking the Stink-Pumpkin to site A or B.",
-        hands: "The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted."
-      },
-      how: [
-        ["Plant it", "Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round."],
-        ["Cork it", "Defenders win by corking the pumpkin, or by keeping it from being planted in time."],
-        ["Shop smart", "Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins."]
-      ]
-    },
-    lts: {
-      name: "Last Team Standing",
-      jobs: {
-        herd: "The animals. They start at the south end of the map and go looking for farmhands.",
-        hands: "The farmhands. They start at the north end of the map and go looking for animals."
-      },
-      how: [
-        ["Splat them all", "No pumpkin this time. Splat every player on the other team to win the round."],
-        ["Stay standing", "Out means out until the next round. If time runs out, the team with more players left wins."],
-        ["Shop smart", "Win rounds and splat opponents to earn corn coins. Teams swap ends after 5 rounds. First to 6 wins."]
-      ]
-    }
-  };
+  var MODES = { pumpkin: {}, lts: {} };
   var OBJ = {
     plantTime: 3,
     // seconds holding E to plant
@@ -682,14 +701,12 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     cork: 300
   };
   var TEAM = {
-    herd: { name: "The Herd", short: "Herd", color: "#f08a24" },
-    hands: { name: "The Hands", short: "Hands", color: "#3f8fd9" }
+    herd: { color: "#f08a24" },
+    hands: { color: "#3f8fd9" }
   };
   var GADGETS = {
     squirter: {
       id: "squirter",
-      name: "Water Squirter",
-      short: "Squirter",
       auto: false,
       rate: 5.5,
       dmg: 24,
@@ -709,8 +726,6 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     },
     egg: {
       id: "egg",
-      name: "Egg Popper",
-      short: "Egg Popper",
       auto: true,
       rate: 11,
       dmg: 13,
@@ -730,8 +745,6 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     },
     tomato: {
       id: "tomato",
-      name: "Tomato Tosser",
-      short: "Tomato Tosser",
       auto: true,
       rate: 7.5,
       dmg: 27,
@@ -751,8 +764,6 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     },
     pea: {
       id: "pea",
-      name: "Pea Shooter",
-      short: "Pea Shooter",
       auto: false,
       rate: 0.95,
       dmg: 88,
@@ -776,24 +787,24 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
   };
   var PRIMARIES = ["egg", "tomato", "pea"];
   var SHOP = [
-    { id: "egg", kind: "gadget", price: 1200, icon: "icon_egg", blurb: "Fast and cheap. Great up close." },
-    { id: "tomato", kind: "gadget", price: 2700, icon: "icon_tomato", blurb: "Strong all-rounder. Stand still to aim." },
-    { id: "pea", kind: "gadget", price: 4200, icon: "icon_pea", blurb: "One big long-range shot. Right-click to zoom." },
-    { id: "overalls", kind: "gear", name: "Padded Overalls", price: 650, icon: "icon_overalls", blurb: "Soaks up half of every splat until it wears out." },
-    { id: "kit", kind: "gear", name: "Cork Kit", price: 400, icon: "icon_cork_kit", blurb: "Cork the pumpkin twice as fast.", role: "defend" },
-    { id: "flour", kind: "throw", name: "Flour Bomb", price: 300, icon: "icon_flour", blurb: "A white cloud nobody can see through. Throw with 3." },
-    { id: "rooster", kind: "throw", name: "Rooster Crow", price: 200, icon: "icon_rooster", blurb: "Dazzles opponents looking at it. Throw with 4." },
-    { id: "mud", kind: "throw", name: "Mud Balloon", price: 300, icon: "icon_mud", blurb: "A sticky puddle that slows everyone. Throw with 5." }
+    { id: "egg", kind: "gadget", price: 1200, icon: "icon_egg" },
+    { id: "tomato", kind: "gadget", price: 2700, icon: "icon_tomato" },
+    { id: "pea", kind: "gadget", price: 4200, icon: "icon_pea" },
+    { id: "overalls", kind: "gear", price: 650, icon: "icon_overalls" },
+    { id: "kit", kind: "gear", price: 400, icon: "icon_cork_kit", role: "defend" },
+    { id: "flour", kind: "throw", price: 300, icon: "icon_flour" },
+    { id: "rooster", kind: "throw", price: 200, icon: "icon_rooster" },
+    { id: "mud", kind: "throw", price: 300, icon: "icon_mud" }
   ];
   var THROWS = {
-    flour: { id: "flour", name: "Flour", key: 3, fuse: 1.5, radius: 4.6, life: 12 },
-    rooster: { id: "rooster", name: "Rooster", key: 4, fuse: 1.5, radius: 16, daze: 3.2 },
-    mud: { id: "mud", name: "Mud", key: 5, radius: 3.6, life: 9, slow: 0.45 }
+    flour: { id: "flour", key: 3, fuse: 1.5, radius: 4.6, life: 12 },
+    rooster: { id: "rooster", key: 4, fuse: 1.5, radius: 16, daze: 3.2 },
+    mud: { id: "mud", key: 5, radius: 3.6, life: 9, slow: 0.45 }
   };
   var DIFFICULTY = {
-    easy: { label: "Easy", reaction: 0.8, aimErr: 0.085, turn: 3.2, dmgToPlayer: 0.55, fireMoving: true },
-    medium: { label: "Medium", reaction: 0.48, aimErr: 0.05, turn: 5, dmgToPlayer: 0.8, fireMoving: false },
-    hard: { label: "Hard", reaction: 0.28, aimErr: 0.027, turn: 7.5, dmgToPlayer: 1, fireMoving: false }
+    easy: { reaction: 0.8, aimErr: 0.085, turn: 3.2, dmgToPlayer: 0.55, fireMoving: true },
+    medium: { reaction: 0.48, aimErr: 0.05, turn: 5, dmgToPlayer: 0.8, fireMoving: false },
+    hard: { reaction: 0.28, aimErr: 0.027, turn: 7.5, dmgToPlayer: 1, fireMoving: false }
   };
   var ROSTER = {
     herd: [
@@ -1292,8 +1303,9 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     apple: 14234667
   };
   var MAPS = {
-    farm: { id: "farm", name: "Sunnyside Farm", blurb: "A barn, a veggie garden and a cornfield to hide in." },
-    mill: { id: "mill", name: "Applewood Mill", blurb: "A cider mill, a market square and a creek with three bridges." }
+    farm: { id: "farm" },
+    // names and blurbs: map.<id>.name / map.<id>.blurb in lang-*.js
+    mill: { id: "mill" }
   };
   var THEMES = {
     farm: {
@@ -2336,7 +2348,6 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     const slowZones = L.slowZones;
     return {
       id: mapId,
-      name: MAPS[mapId].name,
       boxes,
       cornZones,
       points: L.points,
@@ -3841,6 +3852,7 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
       src.playbackRate.value = rate;
       src.connect(bus(vol, pan, dest));
       src.start();
+      if (vol >= 0.15 && game.subtitles && /^(ann|herd|hands)_/.test(name)) game.subtitles.show(name, buf.duration / rate);
       return src;
     }
     function noise(dur, f0, f1, vol, pan = 0, type = "bandpass", q = 1.2) {
@@ -4210,12 +4222,12 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     "status.droppedDef": "\uD638\uBC15\uC744 \uB5A8\uC5B4\uB728\uB838\uC5B4\uC694. \uC9C0\uD0A4\uC138\uC694!",
     "status.plantedAtt": "{site} \uAD6C\uC5ED\uC5D0 \uC2EC\uC5B4\uC84C\uC5B4\uC694. \uC9C0\uD0A4\uC138\uC694!",
     "status.plantedDef": "{site} \uAD6C\uC5ED\uC5D0 \uC2EC\uC5B4\uC84C\uC5B4\uC694. \uCF54\uB974\uD06C\uB85C \uB9C9\uC73C\uC138\uC694!",
-    "status.reveal": "\uBAA8\uB450\uAC00 \uC9C0\uB3C4\uC5D0 \uD45C\uC2DC\uB418\uACE0 \uC788\uC5B4\uC694",
-    "prompt.planting": "\uC2EC\uB294 \uC911...",
-    "prompt.plant": "[E]\uB97C \uAE38\uAC8C \uB20C\uB7EC \uD638\uBC15 \uC2EC\uAE30",
+    "status.reveal": "\uBAA8\uB450\uAC00 \uBBF8\uB2C8\uB9F5\uC5D0 \uD45C\uC2DC\uB418\uACE0 \uC788\uC5B4\uC694",
+    "prompt.planting": "\uC2EC\uB294 \uC911\uC774\uC5D0\uC694...",
+    "prompt.plant": "[E]\uB97C \uAE38\uAC8C \uB20C\uB7EC \uD638\uBC15\uC744 \uC2EC\uC5B4\uC694",
     "prompt.carry": "A\uB098 B \uAD6C\uC5ED\uC73C\uB85C \uD638\uBC15\uC744 \uAC00\uC838\uAC00\uC138\uC694",
-    "prompt.corking": "\uCF54\uB974\uD06C\uB85C \uB9C9\uB294 \uC911...",
-    "prompt.cork": "[E]\uB97C \uAE38\uAC8C \uB20C\uB7EC \uD638\uBC15\uC744 \uCF54\uB974\uD06C\uB85C \uB9C9\uAE30",
+    "prompt.corking": "\uCF54\uB974\uD06C\uB85C \uB9C9\uB294 \uC911\uC774\uC5D0\uC694...",
+    "prompt.cork": "[E]\uB97C \uAE38\uAC8C \uB20C\uB7EC \uD638\uBC15\uC744 \uCF54\uB974\uD06C\uB85C \uB9C9\uC544\uC694",
     // 상점
     "shop.title": "\uB18D\uC7A5 \uC0C1\uC810",
     "shop.coins": "\uC625\uC218\uC218 \uCF54\uC778 {n}\uAC1C \uBCF4\uC720",
@@ -4279,9 +4291,9 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     "tip.shoulder": "\uC5B4\uAE68 \uB108\uBA38 \uC2DC\uC810\uC774\uC5D0\uC694. V \uD0A4\uB97C \uB204\uB974\uBA74 \uB2E4\uC2DC \uB0B4 \uB208\uC73C\uB85C \uBD10\uC694.",
     "tip.eyes": "\uB0B4 \uB208 \uC2DC\uC810\uC774\uC5D0\uC694. V \uD0A4\uB97C \uB204\uB974\uBA74 \uC5B4\uAE68 \uB108\uBA38 \uC2DC\uC810\uC774 \uB3FC\uC694.",
     "spec.out": "\uC774\uBC88 \uB77C\uC6B4\uB4DC\uB294 \uC544\uC6C3\uC774\uC5D0\uC694.",
-    "spec.watch": "\uC774\uBC88 \uB77C\uC6B4\uB4DC\uB294 \uC544\uC6C3\uC774\uC5D0\uC694. {name} \uAD00\uC804 \uC911. \uD074\uB9AD\uD558\uBA74 \uBC14\uAFD4\uC694.",
+    "spec.watch": "\uC774\uBC88 \uB77C\uC6B4\uB4DC\uB294 \uC544\uC6C3\uC774\uC5D0\uC694. {name} \uAD00\uC804 \uC911\uC774\uC5D0\uC694. \uD074\uB9AD\uD558\uBA74 \uBC14\uAFD4\uC694.",
     "reveal.t": "\uB354\uB294 \uC228\uC744 \uACF3\uC774 \uC5C6\uC5B4\uC694!",
-    "reveal.d": "\uB0A8\uC544 \uC788\uB294 \uBAA8\uB450\uAC00 \uC9C0\uB3C4\uC5D0 \uD45C\uC2DC\uB3FC\uC694.",
+    "reveal.d": "\uB0A8\uC544 \uC788\uB294 \uBAA8\uB450\uAC00 \uBBF8\uB2C8\uB9F5\uC5D0 \uD45C\uC2DC\uB3FC\uC694.",
     // 캐릭터 이름
     "name.Clucky": "\uAF2C\uAF2C",
     "name.Hamlet": "\uD584\uB9BF",
@@ -4292,7 +4304,75 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     "name.Rosie": "\uB85C\uC9C0",
     "name.Hank": "\uD589\uD06C",
     "name.Pip": "\uD54D",
-    "name.Mabel": "\uBA54\uC774\uBE14"
+    "name.Mabel": "\uBA54\uC774\uBE14",
+    // subtitles for the 58 voice clips (key = vo.<clip name in assets/audio>)
+    "sub.ann": "[\uBC29\uC1A1]",
+    "sub.hands": "[\uB18D\uBD80 \uBB34\uC804]",
+    "sub.herd": "[\uB3D9\uBB3C \uBB34\uC804]",
+    "subs.aria": "\uC790\uB9C9 \uC124\uC815",
+    "subs.on": "\uC790\uB9C9 \uCF2C",
+    "subs.off": "\uC790\uB9C9 \uB054",
+    "pause.subs": "\uC790\uB9C9",
+    "logo.sub": "\uD558\uBCA0\uC2A4\uD2B8 \uC2A4\uD0E0\uB4DC\uC624\uD504",
+    "pause.lang": "\uC5B8\uC5B4",
+    "vo.ann_welcome": "\uD558\uBCA0\uC2A4\uD2B8 \uC2A4\uD0E0\uB4DC\uC624\uD504\uC5D0 \uC624\uC2E0 \uAC78 \uD658\uC601\uD574\uC694!",
+    "vo.ann_go": "\uC790, \uCD9C\uBC1C\uD574\uC694!",
+    "vo.ann_planted": "\uC545\uCDE8 \uD638\uBC15\uC774 \uC2EC\uC5B4\uC84C\uC5B4\uC694!",
+    "vo.ann_corked": "\uD638\uBC15\uC744 \uCF54\uB974\uD06C\uB85C \uB9C9\uC558\uC5B4\uC694!",
+    "vo.ann_stink": "\uC73C\uC545, \uB0C4\uC0C8! \uC5C4\uCCAD \uC9C0\uB3C5\uD574\uC694!",
+    "vo.ann_herd_win": "\uB3D9\uBB3C \uD300\uC774 \uC774\uACBC\uC5B4\uC694!",
+    "vo.ann_hands_win": "\uB18D\uBD80 \uD300\uC774 \uC774\uACBC\uC5B4\uC694!",
+    "vo.ann_time": "\uC2DC\uAC04 \uC885\uB8CC!",
+    "vo.ann_half": "\uD558\uD504\uD0C0\uC784! \uC9C4\uC601\uC744 \uBC14\uAFD4\uC694!",
+    "vo.ann_match_point": "\uC2B9\uB9AC\uAE4C\uC9C0 \uD55C \uB77C\uC6B4\uB4DC \uB0A8\uC558\uC5B4\uC694!",
+    "vo.ann_ten": "10\uCD08 \uB0A8\uC558\uC5B4\uC694!",
+    "vo.ann_victory": "\uC2B9\uB9AC! \uC815\uB9D0 \uD48D\uC131\uD55C \uC218\uD655\uC774\uC5D0\uC694!",
+    "vo.ann_defeat": "\uB2E4\uC74C \uC218\uD655 \uB54C\uB294 \uB354 \uC798\uD560 \uC218 \uC788\uC744 \uAC70\uC608\uC694!",
+    "vo.ann_lts": "\uCD5C\uD6C4\uC758 \uD55C \uD300! \uBAA8\uB450 \uB9DE\uD600 \uBC84\uB824\uC694!",
+    "vo.ann_reveal": "\uC774\uC81C \uC228\uC744 \uACF3\uC774 \uC5C6\uC5B4\uC694!",
+    "vo.ann_draw": "\uBB34\uC2B9\uBD80\uC608\uC694!",
+    "vo.herd_go_1": "\uB3CC\uACA9! \uAC00\uC790, \uAC00\uC790, \uAC00\uC790!",
+    "vo.herd_go_2": "\uBC1C\uAD7D\uC774\uB791 \uAE43\uD138, \uCD9C\uB3D9\uD574\uC694!",
+    "vo.herd_spot_1": "\uB18D\uBD80 \uBC1C\uACAC!",
+    "vo.herd_spot_2": "\uBA5C\uBE75\uBC14\uC9C0\uAC00 \uBC14\uB85C \uC55E\uC5D0 \uC788\uC5B4\uC694!",
+    "vo.herd_planting": "\uD638\uBC15\uC744 \uC2EC\uB294 \uC911\uC774\uC5D0\uC694! \uC5C4\uD638\uD574 \uC8FC\uC138\uC694!",
+    "vo.herd_guard": "\uD638\uBC15\uC744 \uB0B4\uB824\uB1A8\uC5B4\uC694! \uC9C0\uCF1C\uC694!",
+    "vo.herd_dropped": "\uD638\uBC15\uC744 \uB5A8\uC5B4\uB728\uB838\uC5B4\uC694!",
+    "vo.herd_got_it": "\uD638\uBC15\uC744 \uC7A1\uC558\uC5B4\uC694!",
+    "vo.herd_hurt_1": "\uC73C\uC545! \uD760\uBED1 \uC816\uC5C8\uC5B4\uC694!",
+    "vo.herd_hurt_2": "\uC73C, \uB048\uC801\uB048\uC801\uD574\uC694!",
+    "vo.herd_out_1": "\uC544\uC774\uCC38, \uAC74\uCD08 \uB354\uBBF8\uC57C! \uB098 \uB9DE\uC558\uC5B4\uC694!",
+    "vo.herd_out_2": "\uCCA0\uD37C\uB355! \uB09C \uC544\uC6C3\uC774\uC5D0\uC694!",
+    "vo.herd_nice": "\uB098\uC774\uC2A4 \uC0F7!",
+    "vo.herd_refill": "\uBB3C\uC744 \uCC44\uC6B0\uB294 \uC911\uC774\uC5D0\uC694!",
+    "vo.herd_to_a": "\uD5DB\uAC04\uC73C\uB85C!",
+    "vo.herd_to_b": "\uCC44\uC18C\uBC2D\uC73C\uB85C \uAC00\uC694!",
+    "vo.herd_corking": "\uD638\uBC15\uC744 \uCF54\uB974\uD06C\uB85C \uB9C9\uB294 \uC911\uC774\uC5D0\uC694! \uC5C4\uD638\uD574 \uC8FC\uC138\uC694!",
+    "vo.herd_flour": "\uBC00\uAC00\uB8E8 \uD3ED\uD0C4!",
+    "vo.herd_mud": "\uC9C4\uD759 \uD48D\uC120!",
+    "vo.herd_rooster": "\uC218\uD0C9 \uC6B8\uC74C \uB098\uAC00\uC694! \uC870\uC2EC\uD574\uC694!",
+    "vo.hands_go_1": "\uC88B\uC544\uC694, \uB18D\uBD80\uB4E4, \uC11C\uB458\uB7EC\uC694!",
+    "vo.hands_go_2": "\uB18D\uC7A5\uC744 \uC9C0\uCF1C\uC694!",
+    "vo.hands_spot_1": "\uB3D9\uBB3C \uBC1C\uACAC!",
+    "vo.hands_spot_2": "\uB9C8\uB2F9\uC5D0 \uB3D9\uBB3C\uB4E4\uC774 \uC788\uC5B4\uC694!",
+    "vo.hands_corking": "\uD638\uBC15\uC744 \uCF54\uB974\uD06C\uB85C \uB9C9\uB294 \uC911\uC774\uC5D0\uC694! \uC5C4\uD638\uD574 \uC8FC\uC138\uC694!",
+    "vo.hands_planted_a": "\uD638\uBC15\uC774 \uD5DB\uAC04\uC5D0 \uC788\uC5B4\uC694!",
+    "vo.hands_planted_b": "\uD638\uBC15\uC774 \uCC44\uC18C\uBC2D\uC5D0 \uC788\uC5B4\uC694!",
+    "vo.hands_hurt_1": "\uC73C\uC545, \uBA5C\uBE75\uBC14\uC9C0\uC5D0 \uC815\uD1B5\uC73C\uB85C \uB9DE\uC558\uC5B4\uC694!",
+    "vo.hands_hurt_2": "\uC774\uBD10\uC694, \uBAA8\uC790 \uC870\uC2EC\uD574\uC694!",
+    "vo.hands_out_1": "\uC5B4\uC774\uCFE0, \uB9D9\uC18C\uC0AC. \uB098 \uB9DE\uC558\uC5B4\uC694!",
+    "vo.hands_out_2": "\uC544\uC774\uACE0 \uCC38! \uB09C \uC544\uC6C3\uC774\uC5D0\uC694!",
+    "vo.hands_nice": "\uB098\uC774\uC2A4 \uC0F7, \uB3D9\uB8CC!",
+    "vo.hands_refill": "\uBB3C\uD0F1\uD06C\uB97C \uCC44\uC6B0\uB294 \uC911\uC774\uC5D0\uC694!",
+    "vo.hands_to_a": "\uD5DB\uAC04\uC73C\uB85C \uAC00\uB294 \uC911\uC774\uC5D0\uC694!",
+    "vo.hands_to_b": "\uCC44\uC18C\uBC2D\uC73C\uB85C \uAC00\uB294 \uC911\uC774\uC5D0\uC694!",
+    "vo.hands_planting": "\uD638\uBC15\uC744 \uC2EC\uB294 \uC911\uC774\uC5D0\uC694! \uC5C4\uD638\uD574 \uC8FC\uC138\uC694!",
+    "vo.hands_guard": "\uD638\uBC15\uC774 \uB0B4\uB824\uC84C\uC5B4\uC694! \uC9C0\uCF1C\uC694!",
+    "vo.hands_dropped": "\uD638\uBC15\uC744 \uB5A8\uC5B4\uB728\uB838\uC5B4\uC694!",
+    "vo.hands_got_it": "\uD638\uBC15\uC744 \uC7A1\uC558\uC5B4\uC694!",
+    "vo.hands_flour": "\uBC00\uAC00\uB8E8 \uD3ED\uD0C4!",
+    "vo.hands_mud": "\uC9C4\uD759 \uD48D\uC120!",
+    "vo.hands_rooster": "\uC218\uD0C9 \uC6B8\uC74C \uB098\uAC00\uC694! \uC870\uC2EC\uD574\uC694!"
   };
 
   // src/lang-en.js
@@ -4482,7 +4562,75 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     "name.Rosie": "Rosie",
     "name.Hank": "Hank",
     "name.Pip": "Pip",
-    "name.Mabel": "Mabel"
+    "name.Mabel": "Mabel",
+    // subtitles for the 58 voice clips (key = vo.<clip name in assets/audio>)
+    "sub.ann": "[Announcer]",
+    "sub.hands": "[Farmer radio]",
+    "sub.herd": "[Animal radio]",
+    "subs.aria": "Subtitles",
+    "subs.on": "Subtitles on",
+    "subs.off": "Subtitles off",
+    "pause.subs": "Subtitles",
+    "logo.sub": "",
+    "pause.lang": "Language",
+    "vo.ann_welcome": "Welcome to Harvest Standoff!",
+    "vo.ann_go": "Let's go!",
+    "vo.ann_planted": "The Stink-Pumpkin has been planted!",
+    "vo.ann_corked": "The pumpkin has been corked!",
+    "vo.ann_stink": "Pee-yew! What a stinker!",
+    "vo.ann_herd_win": "The Herd wins!",
+    "vo.ann_hands_win": "The Farmhands win!",
+    "vo.ann_time": "Time's up!",
+    "vo.ann_half": "Half-time! Switch sides!",
+    "vo.ann_match_point": "Match point!",
+    "vo.ann_ten": "Ten seconds!",
+    "vo.ann_victory": "Victory! What a harvest!",
+    "vo.ann_defeat": "Better luck next harvest!",
+    "vo.ann_lts": "Last team standing! Splat them all!",
+    "vo.ann_reveal": "Nowhere left to hide!",
+    "vo.ann_draw": "It's a draw!",
+    "vo.herd_go_1": "Stampede! Go, go, go!",
+    "vo.herd_go_2": "Hooves and feathers, move out!",
+    "vo.herd_spot_1": "Farmer spotted!",
+    "vo.herd_spot_2": "Overalls, dead ahead!",
+    "vo.herd_planting": "Planting the pumpkin! Cover me!",
+    "vo.herd_guard": "Pumpkin's down! Guard it!",
+    "vo.herd_dropped": "I dropped the pumpkin!",
+    "vo.herd_got_it": "I've got the pumpkin!",
+    "vo.herd_hurt_1": "Hey! I'm soaked!",
+    "vo.herd_hurt_2": "Yikes, that's sticky!",
+    "vo.herd_out_1": "Aw, hay bales! I'm splatted!",
+    "vo.herd_out_2": "Splat! I'm out!",
+    "vo.herd_nice": "Nice shot!",
+    "vo.herd_refill": "Refilling!",
+    "vo.herd_to_a": "To the barn!",
+    "vo.herd_to_b": "Going to the garden!",
+    "vo.herd_corking": "Corking the pumpkin! Cover me!",
+    "vo.herd_flour": "Flour bomb!",
+    "vo.herd_mud": "Mud balloon!",
+    "vo.herd_rooster": "Rooster away! Look out!",
+    "vo.hands_go_1": "Alright farmhands, move it!",
+    "vo.hands_go_2": "Protect the farm!",
+    "vo.hands_spot_1": "Critter spotted!",
+    "vo.hands_spot_2": "Animals in the yard!",
+    "vo.hands_corking": "Corking the pumpkin! Cover me!",
+    "vo.hands_planted_a": "The pumpkin is at the barn!",
+    "vo.hands_planted_b": "The pumpkin is at the garden!",
+    "vo.hands_hurt_1": "Yeesh, right in the overalls!",
+    "vo.hands_hurt_2": "Hey, watch the hat!",
+    "vo.hands_out_1": "Well, butter my biscuit. I'm splatted!",
+    "vo.hands_out_2": "Oh, fiddlesticks! I'm out!",
+    "vo.hands_nice": "Nice shot, partner!",
+    "vo.hands_refill": "Refilling my tank!",
+    "vo.hands_to_a": "Heading to the barn!",
+    "vo.hands_to_b": "Heading to the garden!",
+    "vo.hands_planting": "Planting the pumpkin! Cover me!",
+    "vo.hands_guard": "Pumpkin's down! Guard it!",
+    "vo.hands_dropped": "Dropped the pumpkin!",
+    "vo.hands_got_it": "I've got the pumpkin!",
+    "vo.hands_flour": "Flour bomb!",
+    "vo.hands_mud": "Mud balloon!",
+    "vo.hands_rooster": "Rooster away! Look out!"
   };
 
   // src/i18n.js
@@ -4495,6 +4643,8 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
   } catch (e) {
   }
   var listeners = [];
+  var getLang = () => lang;
+  var fmt = (n) => Number(n).toLocaleString(lang === "ko" ? "ko-KR" : "en-US");
   function t(key, params) {
     let s = DICT[lang][key];
     if (s === void 0) s = DICT.en[key];
@@ -4510,7 +4660,7 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     for (const [attr, target] of [["i18nAlt", "alt"], ["i18nAria", "aria-label"], ["i18nTitle", "title"]]) {
       root.querySelectorAll(`[data-${attr.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase())}]`).forEach((n) => n.setAttribute(target, t(n.dataset[attr])));
     }
-    document.querySelectorAll("#langs button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.lang === lang)));
+    document.querySelectorAll(".lang-sw button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.lang === lang)));
   }
   function setLang(l) {
     if (!DICT[l] || l === lang) return;
@@ -4523,6 +4673,68 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     listeners.forEach((f) => f());
   }
   var onLangChange = (f) => listeners.push(f);
+
+  // src/subtitles.js
+  var KEY2 = "hs-subs";
+  var MAX_LINES = 2;
+  function createSubtitles() {
+    const box = document.getElementById("subs");
+    let on = true;
+    try {
+      if (localStorage.getItem(KEY2) === "0") on = false;
+    } catch (e) {
+    }
+    let lines = [];
+    const speaker = (clip) => clip.startsWith("ann_") ? "sub.ann" : clip.startsWith("hands_") ? "sub.hands" : "sub.herd";
+    function draw() {
+      box.textContent = "";
+      box.hidden = !on || !lines.length;
+      if (box.hidden) return;
+      for (const l of lines) {
+        const row = document.createElement("div");
+        row.className = "sub " + speaker(l.clip).slice(4);
+        const who = document.createElement("b");
+        who.textContent = t(speaker(l.clip));
+        row.append(who, " ", t("vo." + l.clip));
+        box.append(row);
+      }
+    }
+    function drop(l) {
+      lines = lines.filter((x) => x !== l);
+      clearTimeout(l.timer);
+      draw();
+    }
+    function show(clip, seconds) {
+      if (t("vo." + clip) === "vo." + clip) return false;
+      const hold = Math.max(1.2, seconds + 0.4) * 1e3;
+      for (const old of lines.filter((x) => x.clip !== clip && speaker(x.clip) === speaker(clip))) drop(old);
+      let l = lines.find((x) => x.clip === clip);
+      if (l) clearTimeout(l.timer);
+      else {
+        l = { clip };
+        lines.push(l);
+      }
+      l.timer = setTimeout(() => drop(l), hold);
+      while (lines.length > MAX_LINES) drop(lines[0]);
+      draw();
+      return true;
+    }
+    function setOn(v) {
+      on = !!v;
+      try {
+        localStorage.setItem(KEY2, on ? "1" : "0");
+      } catch (e) {
+      }
+      sync();
+      draw();
+    }
+    function sync() {
+      document.querySelectorAll(".subs-sw button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.subs === "1" === on)));
+    }
+    document.querySelectorAll(".subs-sw button").forEach((b) => b.addEventListener("click", () => setOn(b.dataset.subs === "1")));
+    sync();
+    return { show, setOn, redraw: draw, isOn: () => on };
+  }
 
   // src/hud.js
   var $ = (id) => document.getElementById(id);
@@ -4655,13 +4867,14 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
         last.veil = veil;
         el.veil.style.opacity = veil;
       }
-      if (last.coins !== p.coins) {
-        if (last.coins !== void 0) {
+      if (last.coins !== p.coins || last.coinLang !== getLang()) {
+        last.coinLang = getLang();
+        if (last.coins !== void 0 && last.coins !== p.coins) {
           el.purse.classList.add("flash");
           setTimeout(() => el.purse.classList.remove("flash"), 350);
         }
         last.coins = p.coins;
-        el.coins.textContent = p.coins.toLocaleString("en-US");
+        el.coins.textContent = fmt(p.coins);
       }
       const zoomed = p.alive && p.scoped;
       show("scope", el.scope, zoomed);
@@ -4733,7 +4946,7 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
       const key = p.coins + "|" + items.map((i) => i.state).join("");
       if (key === shopKey) return;
       shopKey = key;
-      el["shop-coins"].textContent = t("shop.coins", { n: p.coins.toLocaleString("en-US") });
+      el["shop-coins"].textContent = t("shop.coins", { n: fmt(p.coins) });
       el["shop-list"].textContent = "";
       items.forEach((it, i) => {
         const b = document.createElement("button");
@@ -4754,7 +4967,7 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
         mid.append(nm, document.createElement("br"), bl);
         const pr = document.createElement("span");
         pr.className = "pr";
-        pr.textContent = it.state === "own" ? t("shop.owned") : it.price.toLocaleString("en-US");
+        pr.textContent = it.state === "own" ? t("shop.owned") : fmt(it.price);
         b.append(k, img, mid, pr);
         b.addEventListener("click", () => game.buy(p, it.id));
         el["shop-list"].append(b);
@@ -5021,6 +5234,7 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     game.world = buildWorld(scene, game.mapId);
     game.nav = buildNav(game.world);
     game.fx = createFx(scene);
+    game.subtitles = createSubtitles();
     game.audio = createAudio(game);
     game.combat = createCombat(game);
     game.throwables = createThrowables(game);
@@ -5965,11 +6179,12 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     });
     $2("map-blurb").textContent = t(`map.${game.mapId}.blurb`);
     applyI18n();
-    document.querySelectorAll("#langs button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".lang-sw button").forEach((b) => b.addEventListener("click", () => {
       setLang(b.dataset.lang);
       audio.ui();
     }));
     onLangChange(() => {
+      game.subtitles.redraw();
       showMode();
       $2("map-blurb").textContent = t(`map.${game.mapId}.blurb`);
       hud.refreshShop();
