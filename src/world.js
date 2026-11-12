@@ -15,8 +15,8 @@ const C = {
 };
 
 export const MAPS = {
-  farm: { id: 'farm', name: 'Sunnyside Farm', blurb: 'A barn, a veggie garden and a cornfield to hide in.' },
-  mill: { id: 'mill', name: 'Applewood Mill', blurb: 'A cider mill, a market square and a creek with three bridges.' },
+  farm: { id: 'farm' }, // names and blurbs: map.<id>.name / map.<id>.blurb in lang-*.js
+  mill: { id: 'mill' },
 };
 
 // the mood of each map: colours of trees, hedges, grass, sky and sunlight
@@ -701,7 +701,7 @@ export function buildWorld(scene, mapId = 'farm') {
   };
   const slowZones = L.slowZones;
   return {
-    id: mapId, name: MAPS[mapId].name, boxes, cornZones, points: L.points, routes: L.routes, holds: L.holds, spawns, sites: L.sites, animated, half: 40,
+    id: mapId, boxes, cornZones, points: L.points, routes: L.routes, holds: L.holds, spawns, sites: L.sites, animated, half: 40,
     slowZones, cluck: L.cluck,
     // how much slower you move here (1 = normal): wading through the creek is slow
     slowAt(x, z) { for (const s of slowZones) if (x > s.x1 && x < s.x2 && z > s.z1 && z < s.z2) return s.f; return 1; },

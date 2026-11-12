@@ -79,4 +79,16 @@ export const EN = {
   // character names
   'name.Clucky': 'Clucky', 'name.Hamlet': 'Hamlet', 'name.Daisy': 'Daisy', 'name.Woolly': 'Woolly', 'name.Billy': 'Billy',
   'name.Farmer Joe': 'Farmer Joe', 'name.Rosie': 'Rosie', 'name.Hank': 'Hank', 'name.Pip': 'Pip', 'name.Mabel': 'Mabel',
+  // subtitles for the 58 voice clips (key = vo.<clip name in assets/audio>)
+  'sub.ann': '[Announcer]',
+  'sub.hands': '[Farmer radio]',
+  'sub.herd': '[Animal radio]',
+  'subs.aria': 'Subtitles',
+  'subs.on': 'Subtitles on',
+  'subs.off': 'Subtitles off',
+  'pause.subs': 'Subtitles', 'logo.sub': '',
+  'pause.lang': 'Language',
+  'vo.ann_welcome': 'Welcome to Harvest Standoff!', 'vo.ann_go': 'Let\'s go!', 'vo.ann_planted': 'The Stink-Pumpkin has been planted!', 'vo.ann_corked': 'The pumpkin has been corked!', 'vo.ann_stink': 'Pee-yew! What a stinker!', 'vo.ann_herd_win': 'The Herd wins!', 'vo.ann_hands_win': 'The Farmhands win!', 'vo.ann_time': 'Time\'s up!', 'vo.ann_half': 'Half-time! Switch sides!', 'vo.ann_match_point': 'Match point!', 'vo.ann_ten': 'Ten seconds!', 'vo.ann_victory': 'Victory! What a harvest!', 'vo.ann_defeat': 'Better luck next harvest!', 'vo.ann_lts': 'Last team standing! Splat them all!', 'vo.ann_reveal': 'Nowhere left to hide!', 'vo.ann_draw': 'It\'s a draw!',
+  'vo.herd_go_1': 'Stampede! Go, go, go!', 'vo.herd_go_2': 'Hooves and feathers, move out!', 'vo.herd_spot_1': 'Farmer spotted!', 'vo.herd_spot_2': 'Overalls, dead ahead!', 'vo.herd_planting': 'Planting the pumpkin! Cover me!', 'vo.herd_guard': 'Pumpkin\'s down! Guard it!', 'vo.herd_dropped': 'I dropped the pumpkin!', 'vo.herd_got_it': 'I\'ve got the pumpkin!', 'vo.herd_hurt_1': 'Hey! I\'m soaked!', 'vo.herd_hurt_2': 'Yikes, that\'s sticky!', 'vo.herd_out_1': 'Aw, hay bales! I\'m splatted!', 'vo.herd_out_2': 'Splat! I\'m out!', 'vo.herd_nice': 'Nice shot!', 'vo.herd_refill': 'Refilling!', 'vo.herd_to_a': 'To the barn!', 'vo.herd_to_b': 'Going to the garden!', 'vo.herd_corking': 'Corking the pumpkin! Cover me!', 'vo.herd_flour': 'Flour bomb!', 'vo.herd_mud': 'Mud balloon!', 'vo.herd_rooster': 'Rooster away! Look out!',
+  'vo.hands_go_1': 'Alright farmhands, move it!', 'vo.hands_go_2': 'Protect the farm!', 'vo.hands_spot_1': 'Critter spotted!', 'vo.hands_spot_2': 'Animals in the yard!', 'vo.hands_corking': 'Corking the pumpkin! Cover me!', 'vo.hands_planted_a': 'The pumpkin is at the barn!', 'vo.hands_planted_b': 'The pumpkin is at the garden!', 'vo.hands_hurt_1': 'Yeesh, right in the overalls!', 'vo.hands_hurt_2': 'Hey, watch the hat!', 'vo.hands_out_1': 'Well, butter my biscuit. I\'m splatted!', 'vo.hands_out_2': 'Oh, fiddlesticks! I\'m out!', 'vo.hands_nice': 'Nice shot, partner!', 'vo.hands_refill': 'Refilling my tank!', 'vo.hands_to_a': 'Heading to the barn!', 'vo.hands_to_b': 'Heading to the garden!', 'vo.hands_planting': 'Planting the pumpkin! Cover me!', 'vo.hands_guard': 'Pumpkin\'s down! Guard it!', 'vo.hands_dropped': 'Dropped the pumpkin!', 'vo.hands_got_it': 'I\'ve got the pumpkin!', 'vo.hands_flour': 'Flour bomb!', 'vo.hands_mud': 'Mud balloon!', 'vo.hands_rooster': 'Rooster away! Look out!',
 };

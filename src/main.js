@@ -9,6 +9,7 @@ import { Bot } from './bot.js';
 import { createCombat } from './combat.js';
 import { createFx } from './fx.js';
 import { createAudio } from './audio.js';
+import { createSubtitles } from './subtitles.js';
 import { createHud } from './hud.js';
 import { createViewModel } from './viewmodel.js';
 import { buildPumpkin, buildCharacter, buildGadget, animateCharacter, modelOptions } from './characters.js';
@@ -54,6 +55,7 @@ function boot() {
   game.world = buildWorld(scene, game.mapId);
   game.nav = buildNav(game.world);
   game.fx = createFx(scene);
+  game.subtitles = createSubtitles();
   game.audio = createAudio(game);
   game.combat = createCombat(game);
   game.throwables = createThrowables(game);
@@ -746,8 +748,8 @@ function boot() {
   $('map-blurb').textContent = tl(`map.${game.mapId}.blurb`);
   // language switch: the choice is saved by setLang()
   applyI18n();
-  document.querySelectorAll('#langs button').forEach((b) => b.addEventListener('click', () => { setLang(b.dataset.lang); audio.ui(); }));
-  onLangChange(() => { showMode(); $('map-blurb').textContent = tl(`map.${game.mapId}.blurb`); hud.refreshShop(); });
+  document.querySelectorAll('.lang-sw button').forEach((b) => b.addEventListener('click', () => { setLang(b.dataset.lang); audio.ui(); }));
+  onLangChange(() => { game.subtitles.redraw(); showMode(); $('map-blurb').textContent = tl(`map.${game.mapId}.blurb`); hud.refreshShop(); });
   // sound can only start after the first click anywhere
   document.addEventListener('pointerdown', () => {
     audio.init();

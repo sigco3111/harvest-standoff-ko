@@ -201,17 +201,41 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
   #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
   #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
 }
+
+/* ---------- logo subtitle, subtitle switch, pause-screen switches, subtitle bar ---------- */
+.logo-wrap { position: relative; container-type: inline-size; min-width: 0; }
+.logo-sub {
+  position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+  font-family: var(--display); font-weight: 900; font-synthesis: none; font-size: 20px; font-size: clamp(14px, 8.5cqw, 34px); line-height: 1.1; letter-spacing: 0.02em;
+  color: var(--cream); -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink);
+}
+html[lang="en"] .logo-sub { display: none; }
+.lang.left { right: auto; left: 30px; }
+.lang.inline { position: static; margin: 0; }
+@media (max-width: 640px) { .lang.left { left: 16px; } }
+#subs {
+  position: absolute; left: 50%; bottom: 164px; transform: translateX(-50%); z-index: 30; width: max-content; max-width: min(92vw, 760px);
+  display: grid; gap: 6px; pointer-events: none; text-align: center;
+}
+#subs .sub {
+  background: rgba(24, 16, 10, 0.82); color: #fff; border-radius: 14px; padding: 7px 16px; font-size: 20px; line-height: 1.35; font-weight: 800;
+  word-break: keep-all; text-wrap: balance; text-shadow: 0 1px 2px #000;
+}
+#subs .sub b { margin-right: 4px; font-weight: 800; }
+#subs .sub.ann b { color: var(--hay); } #subs .sub.herd b { color: #ffb15c; } #subs .sub.hands b { color: #8cc6ff; }
+html[lang="en"] #subs .sub { font-size: 19px; word-break: normal; }
+@media (max-width: 640px) { #subs .sub { font-size: 16px; padding: 5px 12px; } #subs { bottom: 146px; } }
 </style>
 
 <div id="game">
-  <canvas id="view" aria-label="Harvest Standoff" data-i18n-aria="title"></canvas>
+  <canvas id="view" aria-label="하베스트 스탠드오프" data-i18n-aria="title"></canvas>
 
   <div id="hud" hidden>
     <canvas id="radar" width="272" height="272"></canvas>
     <div id="top" class="pill">
-      <div class="team herd"><span class="score" id="score-herd">0</span><span class="label" data-i18n="team.herd.short">Herd</span><span class="pips" id="pips-herd"></span></div>
+      <div class="team herd"><span class="score" id="score-herd">0</span><span class="label" data-i18n="team.herd.short">동물</span><span class="pips" id="pips-herd"></span></div>
       <div id="timer">1:40</div>
-      <div class="team hands"><span class="score" id="score-hands">0</span><span class="label" data-i18n="team.hands.short">Hands</span><span class="pips" id="pips-hands"></span></div>
+      <div class="team hands"><span class="score" id="score-hands">0</span><span class="label" data-i18n="team.hands.short">농부</span><span class="pips" id="pips-hands"></span></div>
     </div>
     <div id="feed"></div>
     <div id="hurt"></div>
@@ -224,108 +248,128 @@ html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, ht
     <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
     <div id="tip" class="pill" hidden></div>
     <div id="spectate" class="pill" hidden></div>
-    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span data-i18n="hud.overalls">Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span data-i18n="hud.clean">Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
-    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd><span data-i18n="g.squirter.short">Squirter</span></div><div id="slot-3" class="empty"><kbd>3</kbd><span data-i18n="throw.flour">Flour</span></div><div id="slot-4" class="empty"><kbd>4</kbd><span data-i18n="throw.rooster">Rooster</span></div><div id="slot-5" class="empty"><kbd>5</kbd><span data-i18n="throw.mud">Mud</span></div><div id="slot-b"><kbd>B</kbd><span data-i18n="hud.shop">Shop</span></div></div>
-    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins" data-i18n-alt="coins.alt"><span id="coins">800</span></div>
+    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span data-i18n="hud.overalls">멜빵바지</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span data-i18n="hud.clean">깨끗함</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">비어 있음</span></div><div id="slot-2"><kbd>2</kbd><span data-i18n="g.squirter.short">물총</span></div><div id="slot-3" class="empty"><kbd>3</kbd><span data-i18n="throw.flour">밀가루</span></div><div id="slot-4" class="empty"><kbd>4</kbd><span data-i18n="throw.rooster">수탉</span></div><div id="slot-5" class="empty"><kbd>5</kbd><span data-i18n="throw.mud">진흙</span></div><div id="slot-b"><kbd>B</kbd><span data-i18n="hud.shop">상점</span></div></div>
+    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="옥수수 코인" data-i18n-alt="coins.alt"><span id="coins">800</span></div>
     <div id="shop" class="pill" hidden>
-      <h2><span data-i18n="shop.title">Farm Shop</span> <span id="shop-coins"></span></h2>
+      <h2><span data-i18n="shop.title">농장 상점</span> <span id="shop-coins"></span></h2>
       <div id="shop-list"></div>
-      <div class="foot"><span data-i18n="shop.foot1">Press a number to buy.</span> <kbd>B</kbd> <span data-i18n="shop.foot2">closes the shop. Splatted players lose what they bought.</span></div>
+      <div class="foot"><span data-i18n="shop.foot1">숫자 키를 눌러 구매하세요.</span> <kbd>B</kbd> <span data-i18n="shop.foot2">키로 상점을 닫아요. 맞아서 아웃되면 산 물건을 잃어요.</span></div>
     </div>
-    <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">Water Squirter</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
+    <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">물총</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
   </div>
 
   <div id="menu" class="overlay">
     <div class="panel">
-      <div class="seg lang" id="langs" role="radiogroup" aria-label="Language" data-i18n-aria="lang.aria">
+      <div class="seg lang lang-sw" id="langs" role="radiogroup" aria-label="언어 선택" data-i18n-aria="lang.aria">
         <button data-lang="ko" role="radio" aria-checked="true" lang="ko">한국어</button>
         <button data-lang="en" role="radio" aria-checked="false" lang="en">English</button>
       </div>
+      <div class="seg lang subs-sw left" role="radiogroup" aria-label="자막 설정" data-i18n-aria="subs.aria">
+        <button data-subs="1" role="radio" aria-checked="true" data-i18n="subs.on">자막 켬</button>
+        <button data-subs="0" role="radio" aria-checked="false" data-i18n="subs.off">자막 끔</button>
+      </div>
       <header class="head">
-        <h1 class="sr" data-i18n="title">Harvest Standoff</h1>
-        <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" data-i18n-alt="alt.logo" width="1000" height="563">
-        <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" data-i18n-alt="alt.keyart" width="1536" height="864">
+        <h1 class="sr" data-i18n="title">하베스트 스탠드오프</h1>
+        <div class="logo-wrap">
+          <img class="logo" src="assets/ui/logo.jpg" alt="하베스트 스탠드오프 (Harvest Standoff)" data-i18n-alt="alt.logo" width="1000" height="563">
+          <span class="logo-sub" lang="ko" aria-hidden="true" data-i18n="logo.sub">하베스트 스탠드오프</span>
+        </div>
+        <img class="art" src="assets/ui/keyart.jpg" alt="빨간 헛간 앞에서 물총 싸움을 벌이는 농장 동물들과 농부들" data-i18n-alt="alt.keyart" width="1536" height="864">
       </header>
       <div class="pick mode">
-        <span class="lab" data-i18n="game.label">Game</span>
-        <div class="seg" id="modes" role="radiogroup" aria-label="Choose the game" data-i18n-aria="aria.modes">
-          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true" data-i18n="mode.pumpkin">Stink-Pumpkin</button>
-          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false" data-i18n="mode.lts">Last Team Standing</button>
+        <span class="lab" data-i18n="game.label">게임</span>
+        <div class="seg" id="modes" role="radiogroup" aria-label="게임 방식 고르기" data-i18n-aria="aria.modes">
+          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true" data-i18n="mode.pumpkin">악취 호박</button>
+          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false" data-i18n="mode.lts">최후의 한 팀</button>
         </div>
-        <p class="tag" data-i18n="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
+        <p class="tag" data-i18n="tag">동물 팀 대 농부 팀, 5대5 대결! 다치는 사람은 없고, 엉망진창만 있을 뿐이에요.</p>
       </div>
-      <div class="sides" role="radiogroup" aria-label="Choose your side" data-i18n-aria="aria.sides">
+      <div class="sides" role="radiogroup" aria-label="내 팀 고르기" data-i18n-aria="aria.sides">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
           <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
-          <span class="side-name" data-i18n="team.herd.name">The Herd</span>
-          <span class="side-job" id="job-herd">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
+          <span class="side-name" data-i18n="team.herd.name">동물 팀</span>
+          <span class="side-job" id="job-herd">농장 동물 친구들이에요. 악취 호박을 몰래 A 구역이나 B 구역에 가져다 놓는 게 첫 임무예요.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
           <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
-          <span class="side-name" data-i18n="team.hands.name">The Hands</span>
-          <span class="side-job" id="job-hands">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
+          <span class="side-name" data-i18n="team.hands.name">농부 팀</span>
+          <span class="side-job" id="job-hands">농부들이에요. 두 구역을 지키다가, 호박이 심어지면 코르크로 막아요.</span>
         </button>
       </div>
       <ul class="how">
-        <li id="how-0"><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
-        <li id="how-1"><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
-        <li id="how-2"><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+        <li id="how-0"><b>호박 심기</b>악취 호박을 A나 B 구역까지 들고 가서 E 키를 길게 누르세요. 호박이 터지면 우리 팀이 라운드를 이겨요.</li>
+        <li id="how-1"><b>코르크로 막기</b>수비 팀은 호박을 코르크로 막거나, 제한 시간 안에 심지 못하게 하면 이겨요.</li>
+        <li id="how-2"><b>똑똑한 쇼핑</b>라운드에서 이기고 상대를 맞히면 옥수수 코인을 벌어요. 5라운드 뒤에 팀의 역할이 바뀌고, 먼저 6승을 하면 승리!</li>
       </ul>
       <div class="row">
         <div class="pick">
-          <span class="lab" data-i18n="map.label">Map</span>
-          <div class="seg" id="maps" role="radiogroup" aria-label="Choose the map" data-i18n-aria="aria.maps">
-            <button id="map-farm" data-map="farm" role="radio" aria-checked="true" data-i18n="map.farm.name">Sunnyside Farm</button>
-            <button id="map-mill" data-map="mill" role="radio" aria-checked="false" data-i18n="map.mill.name">Applewood Mill</button>
+          <span class="lab" data-i18n="map.label">맵</span>
+          <div class="seg" id="maps" role="radiogroup" aria-label="맵 고르기" data-i18n-aria="aria.maps">
+            <button id="map-farm" data-map="farm" role="radio" aria-checked="true" data-i18n="map.farm.name">써니사이드 농장</button>
+            <button id="map-mill" data-map="mill" role="radio" aria-checked="false" data-i18n="map.mill.name">애플우드 방앗간</button>
           </div>
         </div>
         <div class="pick">
-          <span class="lab" data-i18n="level.label">Level</span>
-          <div class="seg" id="levels" role="radiogroup" aria-label="How tough are the computer players" data-i18n-aria="aria.levels">
-            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true" data-i18n="diff.easy">Easy</button>
-            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false" data-i18n="diff.medium">Medium</button>
-            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false" data-i18n="diff.hard">Hard</button>
+          <span class="lab" data-i18n="level.label">난이도</span>
+          <div class="seg" id="levels" role="radiogroup" aria-label="컴퓨터 플레이어의 실력 고르기" data-i18n-aria="aria.levels">
+            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true" data-i18n="diff.easy">쉬움</button>
+            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false" data-i18n="diff.medium">보통</button>
+            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false" data-i18n="diff.hard">어려움</button>
           </div>
         </div>
-        <button id="play" class="go" data-i18n="play">Play</button>
+        <button id="play" class="go" data-i18n="play">게임 시작</button>
       </div>
       <p class="blurb" id="map-blurb"></p>
       <ul class="keys">
-        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span data-i18n="key.move">move</span></li>
-        <li><kbd data-i18n="key.mouse">Mouse</kbd> <span data-i18n="key.look">look, click to launch</span></li>
-        <li id="key-use"><kbd>E</kbd> <span data-i18n="key.use">plant or cork</span></li>
-        <li><kbd>B</kbd> <span data-i18n="key.shop">shop</span></li>
-        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> <span data-i18n="key.swap">swap launcher</span></li>
-        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> <span data-i18n="key.throw">throw</span></li>
-        <li><kbd>R</kbd> <span data-i18n="key.refill">refill</span></li>
-        <li><kbd data-i18n="key.space">Space</kbd> <span data-i18n="key.jump">jump</span></li>
-        <li><kbd>Shift</kbd> <span data-i18n="key.tiptoe">tiptoe</span></li>
-        <li><kbd>C</kbd> <span data-i18n="key.crouch">crouch</span></li>
-        <li><kbd data-i18n="key.rclick">Right-click</kbd> <span data-i18n="key.zoom">zoom</span></li>
-        <li><kbd>V</kbd> <span data-i18n="key.view">change view</span></li>
+        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span data-i18n="key.move">이동</span></li>
+        <li><kbd data-i18n="key.mouse">마우스</kbd> <span data-i18n="key.look">시점 이동, 클릭하면 발사</span></li>
+        <li id="key-use"><kbd>E</kbd> <span data-i18n="key.use">심기 / 막기</span></li>
+        <li><kbd>B</kbd> <span data-i18n="key.shop">상점</span></li>
+        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> <span data-i18n="key.swap">무기 바꾸기</span></li>
+        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> <span data-i18n="key.throw">던지기</span></li>
+        <li><kbd>R</kbd> <span data-i18n="key.refill">다시 채우기</span></li>
+        <li><kbd data-i18n="key.space">스페이스</kbd> <span data-i18n="key.jump">점프</span></li>
+        <li><kbd>Shift</kbd> <span data-i18n="key.tiptoe">살금살금 걷기</span></li>
+        <li><kbd>C</kbd> <span data-i18n="key.crouch">웅크리기</span></li>
+        <li><kbd data-i18n="key.rclick">우클릭</kbd> <span data-i18n="key.zoom">확대</span></li>
+        <li><kbd>V</kbd> <span data-i18n="key.view">시점 바꾸기</span></li>
       </ul>
-      <p class="note" id="touch-note" hidden data-i18n="touch">This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
-      <p class="credit"><span data-i18n="credit">Unofficial Korean localization. Original game by andreteow. Source:</span> <a href="https://github.com/andreteow/farm-ca" target="_blank" rel="noopener">andreteow/farm-ca</a></p>
+      <p class="note" id="touch-note" hidden data-i18n="touch">이 테스트 버전은 키보드와 마우스가 필요해서 아직 휴대폰이나 태블릿에서는 할 수 없어요.</p>
+      <p class="credit"><span data-i18n="credit">비공식 한글화 · 원작 제작: andreteow · 원작 저장소:</span> <a href="https://github.com/andreteow/farm-ca" target="_blank" rel="noopener">andreteow/farm-ca</a></p>
     </div>
   </div>
 
   <div id="pause" class="overlay" hidden>
     <div class="panel small">
-      <h2 data-i18n="pause.title">Paused</h2>
-      <p data-i18n="pause.text">The farm is frozen. Nothing moves until you come back.</p>
-      <label class="slider" for="sens"><span data-i18n="pause.sens">Mouse speed</span> <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
-      <label class="slider" for="vol"><span data-i18n="pause.vol">Sound volume</span> <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
-      <div class="btns"><button id="resume" class="go" data-i18n="pause.resume">Keep playing</button><button id="quit" class="go alt" data-i18n="pause.quit">Leave match</button></div>
+      <h2 data-i18n="pause.title">일시정지</h2>
+      <p data-i18n="pause.text">농장이 멈췄어요. 돌아올 때까지 아무것도 움직이지 않아요.</p>
+      <label class="slider" for="sens"><span data-i18n="pause.sens">마우스 속도</span> <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+      <label class="slider" for="vol"><span data-i18n="pause.vol">소리 크기</span> <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
+      <div class="slider"><span data-i18n="pause.lang">언어</span>
+        <div class="seg lang lang-sw inline" role="radiogroup" aria-label="언어 선택" data-i18n-aria="lang.aria">
+          <button data-lang="ko" role="radio" aria-checked="true" lang="ko">한국어</button>
+          <button data-lang="en" role="radio" aria-checked="false" lang="en">English</button>
+        </div>
+      </div>
+      <div class="slider"><span data-i18n="pause.subs">자막</span>
+        <div class="seg lang subs-sw inline" role="radiogroup" aria-label="자막 설정" data-i18n-aria="subs.aria">
+          <button data-subs="1" role="radio" aria-checked="true" data-i18n="subs.on">자막 켬</button>
+          <button data-subs="0" role="radio" aria-checked="false" data-i18n="subs.off">자막 끔</button>
+        </div>
+      </div>
+      <div class="btns"><button id="resume" class="go" data-i18n="pause.resume">계속하기</button><button id="quit" class="go alt" data-i18n="pause.quit">경기 나가기</button></div>
     </div>
   </div>
 
   <div id="end" class="overlay" hidden>
     <div class="panel small">
-      <h2 id="end-title" data-i18n="end.title">Match over</h2>
+      <h2 id="end-title" data-i18n="end.title">경기 종료</h2>
       <p id="end-sub"></p>
-      <div class="btns"><button id="again" class="go" data-i18n="end.again">Play again</button><button id="to-menu" class="go alt" data-i18n="end.menu">Switch sides</button></div>
+      <div class="btns"><button id="again" class="go" data-i18n="end.again">다시 하기</button><button id="to-menu" class="go alt" data-i18n="end.menu">팀 바꾸기</button></div>
     </div>
   </div>
+  <div id="subs" aria-live="polite" hidden></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>

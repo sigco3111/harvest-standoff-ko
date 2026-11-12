@@ -10,6 +10,8 @@ try { const s = localStorage.getItem(KEY); if (s === 'ko' || s === 'en') lang = 
 const listeners = [];
 
 export const getLang = () => lang;
+// numbers follow the active language (ko-KR / en-US)
+export const fmt = (n) => Number(n).toLocaleString(lang === 'ko' ? 'ko-KR' : 'en-US');
 export function t(key, params) {
   let s = DICT[lang][key];
   if (s === undefined) s = DICT.en[key];
@@ -23,7 +25,7 @@ export function applyI18n(root = document) {
   for (const [attr, target] of [['i18nAlt', 'alt'], ['i18nAria', 'aria-label'], ['i18nTitle', 'title']]) {
     root.querySelectorAll(`[data-${attr.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())}]`).forEach((n) => n.setAttribute(target, t(n.dataset[attr])));
   }
-  document.querySelectorAll('#langs button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.lang === lang)));
+  document.querySelectorAll('.lang-sw button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.lang === lang)));
 }
 export function setLang(l) {
   if (!DICT[l] || l === lang) return;

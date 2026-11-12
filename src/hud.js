@@ -1,7 +1,7 @@
 // Everything drawn on top of the 3D view: score, timer, meters, purse, shop, pumpkin prompts, radar and messages.
 import { GADGETS, TEAM, SHOP, OBJ } from './config.js';
 import { angDiff, yawTo } from './util.js';
-import { t as tl } from './i18n.js';
+import { t as tl, fmt, getLang } from './i18n.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -53,9 +53,10 @@ export function createHud(game) {
     if (last.tk !== tk) { last.tk = tk; el['slot-3'].classList.toggle('empty', !p.throws.flour); el['slot-4'].classList.toggle('empty', !p.throws.rooster); el['slot-5'].classList.toggle('empty', !p.throws.mud); }
     const veil = Math.round((game.veil || 0) * 50) / 50;
     if (last.veil !== veil) { last.veil = veil; el.veil.style.opacity = veil; }
-    if (last.coins !== p.coins) {
-      if (last.coins !== undefined) { el.purse.classList.add('flash'); setTimeout(() => el.purse.classList.remove('flash'), 350); }
-      last.coins = p.coins; el.coins.textContent = p.coins.toLocaleString('en-US');
+    if (last.coins !== p.coins || last.coinLang !== getLang()) {
+      last.coinLang = getLang();
+      if (last.coins !== undefined && last.coins !== p.coins) { el.purse.classList.add('flash'); setTimeout(() => el.purse.classList.remove('flash'), 350); }
+      last.coins = p.coins; el.coins.textContent = fmt(p.coins);
     }
 
     // crosshair opens up to show how much the shots will scatter; hidden while zoomed
@@ -115,7 +116,7 @@ export function createHud(game) {
     const key = p.coins + '|' + items.map((i) => i.state).join('');
     if (key === shopKey) return;
     shopKey = key;
-    el['shop-coins'].textContent = tl('shop.coins', { n: p.coins.toLocaleString('en-US') });
+    el['shop-coins'].textContent = tl('shop.coins', { n: fmt(p.coins) });
     el['shop-list'].textContent = '';
     items.forEach((it, i) => {
       const b = document.createElement('button');
@@ -127,7 +128,7 @@ export function createHud(game) {
       const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = it.name;
       const bl = document.createElement('span'); bl.className = 'bl'; bl.textContent = it.blurb;
       mid.append(nm, document.createElement('br'), bl);
-      const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = it.state === 'own' ? tl('shop.owned') : it.price.toLocaleString('en-US');
+      const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = it.state === 'own' ? tl('shop.owned') : fmt(it.price);
       b.append(k, img, mid, pr);
       b.addEventListener('click', () => game.buy(p, it.id));
       el['shop-list'].append(b);

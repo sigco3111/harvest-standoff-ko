@@ -65,6 +65,7 @@ export function createAudio(game) {
     if (vol < 0.004) return true;
     const src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
     src.connect(bus(vol, pan, dest)); src.start();
+    if (vol >= 0.15 && game.subtitles && /^(ann|herd|hands)_/.test(name)) game.subtitles.show(name, buf.duration / rate); // voice line close enough to hear: subtitle it
     return src;
   }
   function noise(dur, f0, f1, vol, pan = 0, type = 'bandpass', q = 1.2) {
