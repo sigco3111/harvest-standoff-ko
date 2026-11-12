@@ -9,6 +9,7 @@ const ROOT = OUT === '.';
 
 // All sounds are glued into ONE file (faster to load, far fewer files to publish); the game gets a table of
 // where each sound starts and how long it is.
+if (!existsSync('assets/audio')) { console.error('assets/audio 폴더가 없어요. 원작 저장소(andreteow/farm-ca)의 assets/audio 를 이 자리에 복사한 뒤 다시 실행하세요.'); process.exit(1); }
 const sounds = readdirSync('assets/audio').filter((f) => f.endsWith('.mp3')).sort();
 const table = {}, chunks = [];
 let offset = 0;
