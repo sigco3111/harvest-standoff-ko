@@ -22,7 +22,8 @@
 - 한글 글꼴 목록 추가와 줄바꿈(`word-break: keep-all`), 글줄 높이 조정 (`src/page.html`)
 - 메인 메뉴 아래쪽 크레딧 줄과 언어 전환 버튼 추가
 - `build.mjs`: 결과물을 저장소 맨 위(`index.html`, `vendor/`, `assets/audio.mp3`)에 만들도록 바꿔 GitHub Pages(main / root)에서 바로 서비스해요. 원래 방식은 `node build.mjs --out=dist`
-- 아직 영어 그대로인 것: 해설·무전 음성(오디오), 로고·키아트 이미지 속 글자
+- `package.json` / `package-lock.json`: 원작의 자동 기본값 `ISC` 를 `UNLICENSED` 로 바꿨어요. (이 저장소는 어떤 라이선스도 주장하지 않아요.)
+- 아직 영어 그대로인 것: 해설·무전 음성(오디오), 로고 이미지 속 글자
 
 ## 직접 빌드하기
 
@@ -31,4 +32,6 @@ npm install
 node build.mjs
 ```
 
-`index.html` 이 새로 만들어져요. (`three` 는 `npm install` 로 받아 `vendor/three.min.js` 로 복사돼요.)
+원작 저장소의 `assets/audio` 폴더(효과음 원본 mp3)를 같은 자리에 복사해 두어야 해요. `index.html` 이 새로 만들어져요. (`three` 는 `npm install` 로 받아 `vendor/three.min.js` 로 복사돼요.)
+
+작업 메모와 남은 일(K2)은 [NOTES.md](NOTES.md) 에 있어요.
