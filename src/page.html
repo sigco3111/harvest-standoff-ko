@@ -1,0 +1,332 @@
+<title>하베스트 스탠드오프</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Layout: one full-screen farm view; menus are "sticker" panels (thick outline, hard offset shadow) floating over it. */
+:root {
+  color-scheme: light;
+  --sky: #8fd0fb;
+  --cream: #fff6df;
+  --ink: #3a2616;
+  --barn: #d9463e;
+  --hay: #f6cf58;
+  --leaf: #4f9f42;
+  --herd: #f08a24;
+  --hands: #3f8fd9;
+  --clean: #58c4f5;
+  --shade: rgba(58, 38, 22, 0.28);
+  --ko: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", sans-serif;
+  --display: "Lilita One", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  --body: "Nunito", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", "Trebuchet MS", "Segoe UI", sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--sky); color: var(--ink); font-family: var(--body); font-weight: 600; font-size: 16px; overflow: hidden; }
+#game { position: relative; height: 100%; overflow: hidden; user-select: none; -webkit-user-select: none; }
+#view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--hands); outline-offset: 3px; }
+
+/* ---------- menus ---------- */
+.overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow-y: auto;
+  padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(143, 208, 251, 0.25);
+}
+.panel {
+  width: min(760px, 100%); margin: auto; background: var(--cream); border: 4px solid var(--ink); border-radius: 26px;
+  box-shadow: 0 8px 0 var(--ink); padding: 16px 24px 18px; display: flex; flex-direction: column; gap: 11px;
+}
+.panel.small { width: min(440px, 100%); text-align: center; align-items: center; }
+.eyebrow { margin: 0; font-weight: 800; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--leaf); }
+h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 0.95; text-wrap: balance; }
+h1 { font-size: clamp(44px, 9vw, 76px); color: var(--barn); text-shadow: 0 4px 0 var(--ink); -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; letter-spacing: 0.01em; }
+h1 span { color: var(--hay); }
+h2 { font-size: 40px; color: var(--barn); }
+.tag { margin: 6px 0 0; font-size: 17px; max-width: 46ch; }
+.title { display: flex; flex-direction: column; gap: 6px; }
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.side {
+  display: grid; grid-template-columns: 78px 1fr; gap: 2px 12px; align-items: center; text-align: left; min-width: 0;
+  background: #fff; border: 4px solid var(--ink); border-radius: 20px; padding: 12px 14px; box-shadow: 0 5px 0 var(--ink);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.side img { grid-row: span 2; width: 78px; height: 78px; border-radius: 16px; border: 3px solid var(--ink); background: var(--sky); object-fit: cover; }
+.side-name { font-family: var(--display); font-size: 26px; align-self: end; }
+.side-job { font-size: 14px; line-height: 1.3; align-self: start; }
+.side[data-team="herd"] .side-name { color: #c9650c; }
+.side[data-team="hands"] .side-name { color: #2c6fb3; }
+.side[aria-checked="true"] { background: var(--hay); transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+.seg { display: flex; border: 4px solid var(--ink); border-radius: 16px; overflow: hidden; background: #fff; }
+.seg button { border: 0; background: transparent; padding: 10px 16px; font-weight: 800; }
+.seg button + button { border-left: 3px solid var(--ink); }
+.seg button[aria-checked="true"] { background: var(--leaf); color: #fff; }
+.pick { display: grid; gap: 3px; }
+.lab { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.seg button { padding: 8px 12px; font-size: 14.5px; }
+.blurb { margin: -8px 0 0; font-size: 13.5px; }
+.pick.mode { grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; }
+.pick.mode .tag { margin: 0 0 0 6px; font-size: 14px; line-height: 1.3; max-width: none; }
+[hidden] { display: none !important; }
+.go {
+  font-family: var(--display); font-size: 28px; letter-spacing: 0.03em; color: #fff; background: var(--barn);
+  border: 4px solid var(--ink); border-radius: 18px; padding: 10px 34px; box-shadow: 0 6px 0 var(--ink);
+}
+.go:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.go.alt { background: var(--hands); font-size: 20px; padding: 8px 22px; }
+.keys { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; }
+.keys li { display: flex; align-items: center; gap: 6px; }
+kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #fff; border: 2px solid var(--ink); border-bottom-width: 4px; border-radius: 8px; padding: 2px 7px; }
+.note { margin: 0; font-size: 14px; background: var(--hay); border: 3px solid var(--ink); border-radius: 12px; padding: 8px 12px; }
+.slider { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800; }
+.slider input { accent-color: var(--barn); width: 150px; }
+.btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.panel.small p { margin: 0; max-width: 34ch; }
+.logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.head { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 2px 18px; align-items: center; }
+.head .art { grid-column: 2; width: 100%; height: 100%; min-height: 120px; max-height: 138px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
+.how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
+.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 10px; }
+.how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
+
+/* ---------- in-game display ---------- */
+#hud { position: absolute; inset: 0; pointer-events: none; font-weight: 800; }
+.pill { background: var(--cream); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 4px 0 var(--shade); }
+#top { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: stretch; gap: 0; overflow: hidden; }
+.team { display: flex; align-items: center; gap: 10px; padding: 6px 14px; }
+.team .score { font-family: var(--display); font-size: 30px; line-height: 1; min-width: 20px; text-align: center; }
+.team .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.team.herd { color: #b95a08; } .team.hands { color: #2c6fb3; flex-direction: row-reverse; }
+.pips { display: flex; gap: 4px; }
+.pips i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); background: currentColor; }
+.pips i.off { background: transparent; opacity: 0.35; }
+#timer { font-family: var(--display); font-size: 28px; padding: 6px 16px; background: var(--ink); color: var(--cream); min-width: 92px; text-align: center; font-variant-numeric: tabular-nums; }
+#timer.low { color: #ffb0a8; }
+#radar { position: absolute; top: 12px; left: 12px; width: 136px; height: 136px; border-radius: 50%; border: 3px solid var(--ink); background: rgba(255, 246, 223, 0.82); box-shadow: 0 4px 0 var(--shade); }
+#feed { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-size: 14px; }
+#feed div { background: rgba(255, 246, 223, 0.92); border: 2px solid var(--ink); border-radius: 10px; padding: 3px 9px; }
+#feed b.herd { color: #b95a08; } #feed b.hands { color: #2c6fb3; }
+.meter { position: absolute; bottom: 14px; padding: 10px 14px; min-width: 190px; display: grid; gap: 6px; }
+#hpbox { left: 14px; } #ammobox { right: 14px; text-align: right; }
+.meter .cap { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; gap: 12px; }
+.meter .num { font-family: var(--display); font-size: 22px; line-height: 0.8; font-variant-numeric: tabular-nums; }
+.bar { height: 12px; border: 2px solid var(--ink); border-radius: 8px; background: #fff; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 100%; background: var(--clean); transition: width 0.12s; }
+#ammo-fill { background: var(--hay); margin-left: auto; }
+#slots { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; font-size: 13px; }
+#slots div { background: rgba(255, 246, 223, 0.85); border: 3px solid var(--ink); border-radius: 12px; padding: 4px 10px; opacity: 0.7; }
+#slots div.on { background: var(--hay); opacity: 1; transform: translateY(-4px); }
+#slots kbd { margin-right: 4px; }
+#slots div { white-space: nowrap; }
+#slots div.empty { opacity: 0.4; }
+#veil { position: absolute; inset: 0; background: #fffdf2; opacity: 0; }
+#purse { position: absolute; right: 14px; bottom: 92px; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
+#purse img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
+#purse.flash { background: var(--hay); }
+#armor-row { display: none; } #armor-row.on { display: grid; gap: 4px; }
+#armor-fill { background: #4f84cf; }
+#status { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); padding: 5px 14px; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#status img { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--ink); object-fit: cover; }
+#status.hot { background: var(--barn); color: #fff; }
+#status.plain img { display: none; }
+#timer.fuse { background: var(--barn); color: #fff; }
+#prompt { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); padding: 10px 18px; text-align: center; display: grid; gap: 6px; min-width: 240px; }
+#prompt kbd { font-size: 14px; }
+#prompt .bar { height: 14px; } #prompt-fill { background: var(--herd); width: 0; transition: none; }
+#scope { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0, transparent 34vh, rgba(20, 30, 12, 0.92) 34.6vh); }
+#scope::before, #scope::after { content: ""; position: absolute; background: rgba(20, 30, 12, 0.8); }
+#scope::before { left: 50%; top: calc(50% - 34vh); width: 2px; height: 68vh; margin-left: -1px; }
+#scope::after { top: 50%; left: calc(50% - 34vh); height: 2px; width: 68vh; margin-top: -1px; }
+#shop { position: absolute; left: 50%; top: 53%; transform: translate(-50%, -50%); width: min(820px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
+#shop h2 { font-size: 30px; display: flex; justify-content: space-between; align-items: baseline; }
+#shop h2 span { font-family: var(--body); font-weight: 800; font-size: 14px; color: var(--ink); }
+#shop-list { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; }
+.item { min-width: 0; display: grid; grid-template-columns: 30px 50px minmax(0, 1fr) auto; gap: 9px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
+.item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
+.item .nm { font-family: var(--display); font-size: 19px; line-height: 1.05; }
+.item .bl { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+.item .pr { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.item.no { opacity: 0.5; } .item.own { background: #dff3cf; } .item.own .pr { font-size: 15px; color: var(--leaf); }
+#shop .foot { font-size: 13px; text-align: center; }
+#cross { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+#cross i { position: absolute; background: #fff; border: 1.5px solid var(--ink); border-radius: 3px; }
+#ch-t, #ch-b { width: 4px; height: 11px; left: -2px; } #ch-l, #ch-r { width: 11px; height: 4px; top: -2px; }
+#dot { width: 4px; height: 4px; left: -2px; top: -2px; border-radius: 50%; }
+#hitmark { position: absolute; left: -18px; top: -18px; width: 36px; height: 36px; opacity: 0; transition: opacity 0.25s; font-family: var(--display); font-size: 34px; line-height: 36px; text-align: center; color: #fff; -webkit-text-stroke: 1.5px var(--ink); }
+#hitmark.head { color: var(--hay); }
+#hurt { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; background: radial-gradient(ellipse at center, transparent 52%, rgba(217, 70, 62, 0.6) 100%); }
+#hurt-arrow { position: absolute; left: 50%; top: 50%; width: 0; height: 0; opacity: 0; transition: opacity 0.6s; }
+#hurt-arrow i { position: absolute; left: -22px; top: -140px; border: 22px solid transparent; border-bottom: 30px solid var(--barn); border-top: 0; filter: drop-shadow(0 0 2px var(--ink)); }
+#banner { position: absolute; left: 50%; top: 17%; transform: translateX(-50%); text-align: center; padding: 12px 28px; }
+#banner-title { font-family: var(--display); font-size: clamp(26px, 5vw, 44px); color: var(--barn); line-height: 1; }
+#banner-sub { font-size: 15px; margin-top: 4px; }
+#spectate { position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); padding: 8px 16px; font-size: 14px; text-align: center; }
+#tip { position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%); padding: 6px 14px; font-size: 13px; text-align: center; }
+
+/* ---------- language switch, credit line, Korean text ---------- */
+.panel { position: relative; }
+.lang { position: absolute; top: 12px; right: 16px; z-index: 2; border-width: 3px; border-radius: 12px; box-shadow: 0 3px 0 var(--ink); }
+.lang button { padding: 5px 10px; font-size: 13px; }
+.credit { margin: 0; font-size: 12px; opacity: 0.8; text-align: center; line-height: 1.4; }
+.credit a { color: inherit; font-weight: 800; }
+/* Korean has no Lilita One glyphs: the fallback font is used with real bold, never a smeared fake bold */
+html[lang="ko"] body { word-break: keep-all; line-height: 1.4; }
+html[lang="ko"] h1, html[lang="ko"] h2, html[lang="ko"] .go, html[lang="ko"] .side-name, html[lang="ko"] .item .nm, html[lang="ko"] .how b,
+html[lang="ko"] .meter .num, html[lang="ko"] #banner-title { font-synthesis: none; font-weight: 800; line-height: 1.15; }
+html[lang="ko"] .eyebrow, html[lang="ko"] .lab, html[lang="ko"] .team .label, html[lang="ko"] .meter .cap { letter-spacing: 0; }
+html[lang="ko"] .go { letter-spacing: 0; font-size: 26px; }
+html[lang="ko"] .go.alt { font-size: 19px; }
+html[lang="ko"] .side-name { font-size: 24px; }
+html[lang="ko"] .side-job, html[lang="ko"] .how, html[lang="ko"] .item .bl { line-height: 1.4; }
+html[lang="ko"] .item .nm { font-size: 17px; line-height: 1.2; }
+html[lang="ko"] .pick.mode .tag { line-height: 1.4; }
+html[lang="ko"] #slots { gap: 6px; }
+html[lang="ko"] #banner { width: max-content; max-width: min(92vw, 760px); }
+html[lang="ko"] #banner-sub, html[lang="ko"] #tip, html[lang="ko"] #spectate, html[lang="ko"] #prompt { max-width: min(92vw, 760px); text-wrap: balance; }
+#banner { max-width: min(92vw, 760px); }
+@media (max-width: 640px) { .lang { position: static; align-self: flex-end; } }
+
+@media (max-width: 640px) {
+  .sides { grid-template-columns: 1fr; }
+  .panel { padding: 16px; border-radius: 20px; }
+  .row { justify-content: center; }
+  #radar { width: 92px; height: 92px; } #feed { display: none; } #slots { display: none; }
+  .meter { min-width: 120px; padding: 6px 10px; }
+  .team .label, .pips { display: none; }
+  .pick.mode { grid-template-columns: 1fr; gap: 4px; } .pick.mode .tag { margin: 0; }
+  .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
+  #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
+  #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
+}
+</style>
+
+<div id="game">
+  <canvas id="view" aria-label="Harvest Standoff" data-i18n-aria="title"></canvas>
+
+  <div id="hud" hidden>
+    <canvas id="radar" width="272" height="272"></canvas>
+    <div id="top" class="pill">
+      <div class="team herd"><span class="score" id="score-herd">0</span><span class="label" data-i18n="team.herd.short">Herd</span><span class="pips" id="pips-herd"></span></div>
+      <div id="timer">1:40</div>
+      <div class="team hands"><span class="score" id="score-hands">0</span><span class="label" data-i18n="team.hands.short">Hands</span><span class="pips" id="pips-hands"></span></div>
+    </div>
+    <div id="feed"></div>
+    <div id="hurt"></div>
+    <div id="hurt-arrow"><i></i></div>
+    <div id="cross"><i id="ch-t"></i><i id="ch-b"></i><i id="ch-l"></i><i id="ch-r"></i><i id="dot"></i><span id="hitmark">×</span></div>
+    <div id="banner" class="pill" hidden><div id="banner-title"></div><div id="banner-sub"></div></div>
+    <div id="status" class="pill" hidden><img src="assets/ui/icon_pumpkin.jpg" alt=""><span id="status-text"></span></div>
+    <div id="veil"></div>
+    <div id="scope" hidden></div>
+    <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
+    <div id="tip" class="pill" hidden></div>
+    <div id="spectate" class="pill" hidden></div>
+    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span data-i18n="hud.overalls">Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span data-i18n="hud.clean">Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd><span data-i18n="g.squirter.short">Squirter</span></div><div id="slot-3" class="empty"><kbd>3</kbd><span data-i18n="throw.flour">Flour</span></div><div id="slot-4" class="empty"><kbd>4</kbd><span data-i18n="throw.rooster">Rooster</span></div><div id="slot-5" class="empty"><kbd>5</kbd><span data-i18n="throw.mud">Mud</span></div><div id="slot-b"><kbd>B</kbd><span data-i18n="hud.shop">Shop</span></div></div>
+    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins" data-i18n-alt="coins.alt"><span id="coins">800</span></div>
+    <div id="shop" class="pill" hidden>
+      <h2><span data-i18n="shop.title">Farm Shop</span> <span id="shop-coins"></span></h2>
+      <div id="shop-list"></div>
+      <div class="foot"><span data-i18n="shop.foot1">Press a number to buy.</span> <kbd>B</kbd> <span data-i18n="shop.foot2">closes the shop. Splatted players lose what they bought.</span></div>
+    </div>
+    <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">Water Squirter</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
+  </div>
+
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <div class="seg lang" id="langs" role="radiogroup" aria-label="Language" data-i18n-aria="lang.aria">
+        <button data-lang="ko" role="radio" aria-checked="true" lang="ko">한국어</button>
+        <button data-lang="en" role="radio" aria-checked="false" lang="en">English</button>
+      </div>
+      <header class="head">
+        <h1 class="sr" data-i18n="title">Harvest Standoff</h1>
+        <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" data-i18n-alt="alt.logo" width="1000" height="563">
+        <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" data-i18n-alt="alt.keyart" width="1536" height="864">
+      </header>
+      <div class="pick mode">
+        <span class="lab" data-i18n="game.label">Game</span>
+        <div class="seg" id="modes" role="radiogroup" aria-label="Choose the game" data-i18n-aria="aria.modes">
+          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true" data-i18n="mode.pumpkin">Stink-Pumpkin</button>
+          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false" data-i18n="mode.lts">Last Team Standing</button>
+        </div>
+        <p class="tag" data-i18n="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
+      </div>
+      <div class="sides" role="radiogroup" aria-label="Choose your side" data-i18n-aria="aria.sides">
+        <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
+          <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
+          <span class="side-name" data-i18n="team.herd.name">The Herd</span>
+          <span class="side-job" id="job-herd">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
+        </button>
+        <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
+          <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
+          <span class="side-name" data-i18n="team.hands.name">The Hands</span>
+          <span class="side-job" id="job-hands">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
+        </button>
+      </div>
+      <ul class="how">
+        <li id="how-0"><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
+        <li id="how-1"><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
+        <li id="how-2"><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+      </ul>
+      <div class="row">
+        <div class="pick">
+          <span class="lab" data-i18n="map.label">Map</span>
+          <div class="seg" id="maps" role="radiogroup" aria-label="Choose the map" data-i18n-aria="aria.maps">
+            <button id="map-farm" data-map="farm" role="radio" aria-checked="true" data-i18n="map.farm.name">Sunnyside Farm</button>
+            <button id="map-mill" data-map="mill" role="radio" aria-checked="false" data-i18n="map.mill.name">Applewood Mill</button>
+          </div>
+        </div>
+        <div class="pick">
+          <span class="lab" data-i18n="level.label">Level</span>
+          <div class="seg" id="levels" role="radiogroup" aria-label="How tough are the computer players" data-i18n-aria="aria.levels">
+            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true" data-i18n="diff.easy">Easy</button>
+            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false" data-i18n="diff.medium">Medium</button>
+            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false" data-i18n="diff.hard">Hard</button>
+          </div>
+        </div>
+        <button id="play" class="go" data-i18n="play">Play</button>
+      </div>
+      <p class="blurb" id="map-blurb"></p>
+      <ul class="keys">
+        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span data-i18n="key.move">move</span></li>
+        <li><kbd data-i18n="key.mouse">Mouse</kbd> <span data-i18n="key.look">look, click to launch</span></li>
+        <li id="key-use"><kbd>E</kbd> <span data-i18n="key.use">plant or cork</span></li>
+        <li><kbd>B</kbd> <span data-i18n="key.shop">shop</span></li>
+        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> <span data-i18n="key.swap">swap launcher</span></li>
+        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> <span data-i18n="key.throw">throw</span></li>
+        <li><kbd>R</kbd> <span data-i18n="key.refill">refill</span></li>
+        <li><kbd data-i18n="key.space">Space</kbd> <span data-i18n="key.jump">jump</span></li>
+        <li><kbd>Shift</kbd> <span data-i18n="key.tiptoe">tiptoe</span></li>
+        <li><kbd>C</kbd> <span data-i18n="key.crouch">crouch</span></li>
+        <li><kbd data-i18n="key.rclick">Right-click</kbd> <span data-i18n="key.zoom">zoom</span></li>
+        <li><kbd>V</kbd> <span data-i18n="key.view">change view</span></li>
+      </ul>
+      <p class="note" id="touch-note" hidden data-i18n="touch">This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
+      <p class="credit"><span data-i18n="credit">Unofficial Korean localization. Original game by andreteow. Source:</span> <a href="https://github.com/andreteow/farm-ca" target="_blank" rel="noopener">andreteow/farm-ca</a></p>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay" hidden>
+    <div class="panel small">
+      <h2 data-i18n="pause.title">Paused</h2>
+      <p data-i18n="pause.text">The farm is frozen. Nothing moves until you come back.</p>
+      <label class="slider" for="sens"><span data-i18n="pause.sens">Mouse speed</span> <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+      <label class="slider" for="vol"><span data-i18n="pause.vol">Sound volume</span> <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
+      <div class="btns"><button id="resume" class="go" data-i18n="pause.resume">Keep playing</button><button id="quit" class="go alt" data-i18n="pause.quit">Leave match</button></div>
+    </div>
+  </div>
+
+  <div id="end" class="overlay" hidden>
+    <div class="panel small">
+      <h2 id="end-title" data-i18n="end.title">Match over</h2>
+      <p id="end-sub"></p>
+      <div class="btns"><button id="again" class="go" data-i18n="end.again">Play again</button><button id="to-menu" class="go alt" data-i18n="end.menu">Switch sides</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
+<script>
+/*__BUNDLE__*/
+</script>
